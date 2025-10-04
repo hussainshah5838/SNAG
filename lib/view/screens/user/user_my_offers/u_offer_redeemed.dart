@@ -1,7 +1,10 @@
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/instance_manager.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
+import 'package:snag/view/screens/user/user_scan_qr/u_payment_method.dart';
 import 'package:snag/view/widget/custom_app_bar_widget.dart';
 import 'package:snag/view/widget/my_button_widget.dart';
 import 'package:snag/view/widget/my_text_widget.dart';
@@ -84,8 +87,8 @@ class UOfferRedeemed extends StatelessWidget {
               Image.asset(Assets.imagesKfc, height: 40),
               Expanded(
                 child: MyText(
-                  text: 'Offer Redeemed',
-                  size: 28,
+                  text: "Weekend Flash Deal — 15% Off",
+                  size: 22,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -95,20 +98,44 @@ class UOfferRedeemed extends StatelessWidget {
             paddingTop: 10,
             text: 'Show this screen to the merchant to redeem your offer.',
             size: 16,
+            weight: FontWeight.w600,
             lineHeight: 1.5,
             color: kTertiaryColor,
             paddingBottom: 20,
           ),
-          MyText(
-            text: '“XYZ123”',
-            size: 28,
-            weight: FontWeight.w600,
-            color: kSecondaryColor,
-            paddingBottom: 30,
+          Row(
+            children: [
+              MyText(
+                text: 'Coupon Code: ',
+                size: 16,
+                weight: FontWeight.w500,
+                color: Colors.black,
+                paddingBottom: 30,
+              ),
+              MyText(
+                text: '“XYZ123”',
+                size: 24,
+                weight: FontWeight.w600,
+                color: Colors.black,
+                paddingBottom: 30,
+              ),
+            ],
           ),
-          Center(child: Image.asset(Assets.imagesQr, height: 200)),
+          Center(
+            child: Image.asset(
+              Assets.imagesQr,
+              height: 180,
+              color: Colors.black,
+            ),
+          ),
           SizedBox(height: 28),
-          Center(child: Image.asset(Assets.imagesBarCode, height: 118)),
+          Center(
+            child: Image.asset(
+              Assets.imagesBarCode,
+              height: 90,
+              color: Colors.black,
+            ),
+          ),
           SizedBox(height: 20),
           ...List.generate(3, (index) {
             final List<Map<String, String>> details = [
@@ -148,7 +175,12 @@ class UOfferRedeemed extends StatelessWidget {
       ),
       bottomNavigationBar: Padding(
         padding: AppSizes.DEFAULT,
-        child: MyButton(buttonText: 'Done', onTap: () {}),
+        child: MyButton(
+          buttonText: 'Done',
+          onTap: () {
+            Get.to(() => UPaymentMethod());
+          },
+        ),
       ),
     );
   }

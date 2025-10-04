@@ -1,8 +1,11 @@
+import 'package:get/get.dart';
+import 'package:get/instance_manager.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
 import 'package:snag/main.dart';
+import 'package:snag/view/screens/bottom_nav_bar/user_nav_bar.dart';
 import 'package:snag/view/widget/common_image_view_widget.dart';
 import 'package:snag/view/widget/custom_app_bar_widget.dart';
 import 'package:snag/view/widget/my_button_widget.dart';
@@ -123,7 +126,12 @@ class UFeedback extends StatelessWidget {
           children: [
             MyBorderButton(buttonText: 'Share App', onTap: () {}),
             SizedBox(height: 12),
-            MyButton(buttonText: 'Done', onTap: () {}),
+            MyButton(
+              buttonText: 'Done',
+              onTap: () {
+                Get.offAll(() => UserNavBar());
+              },
+            ),
           ],
         ),
       ),

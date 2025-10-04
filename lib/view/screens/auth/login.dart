@@ -68,15 +68,14 @@ class _LoginBottomSheet extends StatelessWidget {
         physics: BouncingScrollPhysics(),
         children: [
           MyText(
-            text: 'Let’s snag you in',
+            text: 'Let\'s snag you in...',
             paddingTop: 8,
             size: 24,
             weight: FontWeight.w600,
             paddingBottom: 8,
           ),
           MyText(
-            text:
-                'Help customers discover your business. Quick, safe, and easy.',
+            text: 'Discover offers around you - quick, safe and easy!',
             size: 16,
             lineHeight: 1.5,
             weight: FontWeight.w500,
@@ -122,7 +121,7 @@ class _LoginBottomSheet extends StatelessWidget {
                   : Get.to(() => UserNavBar());
             },
           ),
-          SizedBox(height: 12),
+          SizedBox(height: 25),
           Center(
             child: Wrap(
               children: [

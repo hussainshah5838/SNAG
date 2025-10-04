@@ -162,17 +162,36 @@ class _OfferDetailsState extends State<OfferDetails> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        MyText(
-          paddingTop: 30,
-          text: '“XYZ123”',
-          size: 28,
-          weight: FontWeight.w600,
-          color: kSecondaryColor,
-          paddingBottom: 30,
+        SizedBox(height: 30),
+        Row(
+          children: [
+            MyText(
+              text: 'Coupon Code: ',
+              size: 16,
+              weight: FontWeight.w500,
+              color: Colors.black,
+              paddingBottom: 30,
+            ),
+            MyText(
+              text: '“XYZ123”',
+              size: 24,
+              weight: FontWeight.w600,
+              color: Colors.black,
+              paddingBottom: 30,
+            ),
+          ],
         ),
-        Center(child: Image.asset(Assets.imagesQr, height: 200)),
+        Center(
+          child: Image.asset(Assets.imagesQr, height: 180, color: Colors.black),
+        ),
         SizedBox(height: 28),
-        Center(child: Image.asset(Assets.imagesBarCode, height: 118)),
+        Center(
+          child: Image.asset(
+            Assets.imagesBarCode,
+            height: 90,
+            color: Colors.black,
+          ),
+        ),
       ],
     );
   }
