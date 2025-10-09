@@ -3,7 +3,7 @@ import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
 import 'package:snag/main.dart';
 import 'package:snag/view/screens/merchant/billing_payments/billing_payments.dart';
-import 'package:snag/view/screens/merchant/settings/contact_support.dart';
+import 'package:snag/view/screens/merchant/settings/faq.dart';
 import 'package:snag/view/screens/merchant/settings/edit_profile.dart';
 import 'package:snag/view/screens/merchant/settings/locations/business_locations.dart';
 import 'package:snag/view/widget/common_image_view_widget.dart';
@@ -203,7 +203,7 @@ class _SettingsState extends State<Settings> {
                       onTap: () {
                         switch (index) {
                           case 0:
-                            Get.to(() => ContactSupport());
+                            Get.to(() => Faq());
                             break;
                           case 1:
                             Get.dialog(_deleteAccount());
@@ -412,7 +412,7 @@ class _SettingsState extends State<Settings> {
                 ),
                 SizedBox(height: 12),
                 MyBorderButton(
-                  buttonColor: kGreyColor2,
+                  borderColor: kGreyColor2,
                   height: 42,
                   buttonText: 'Cancel',
                   onTap: () {
@@ -481,7 +481,7 @@ class _SettingsState extends State<Settings> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
                   child: RatingBar(
-                    initialRating: 3,
+                    initialRating: 5,
                     minRating: 1,
                     direction: Axis.horizontal,
                     allowHalfRating: false,
@@ -509,7 +509,7 @@ class _SettingsState extends State<Settings> {
                 ),
                 SizedBox(height: 12),
                 MyBorderButton(
-                  buttonColor: kGreyColor2,
+                  borderColor: kGreyColor2,
                   height: 42,
                   buttonText: 'Cancel',
                   onTap: () {
@@ -585,7 +585,7 @@ class _SettingsState extends State<Settings> {
                 ),
                 SizedBox(height: 12),
                 MyBorderButton(
-                  buttonColor: kGreyColor2,
+                  borderColor: kGreyColor2,
                   height: 42,
                   buttonText: 'Cancel',
                   onTap: () {
@@ -661,7 +661,7 @@ class _SettingsState extends State<Settings> {
                 ),
                 SizedBox(height: 12),
                 MyBorderButton(
-                  buttonColor: kGreyColor2,
+                  borderColor: kGreyColor2,
                   height: 42,
                   buttonText: 'Cancel',
                   onTap: () {

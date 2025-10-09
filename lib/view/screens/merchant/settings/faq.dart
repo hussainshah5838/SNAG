@@ -7,7 +7,7 @@ import 'package:snag/view/widget/my_text_widget.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
-class ContactSupport extends StatelessWidget {
+class Faq extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -415,7 +415,7 @@ Column _deleteDiscount() {
               ),
               SizedBox(height: 12),
               MyBorderButton(
-                buttonColor: kGreyColor2,
+                borderColor: kGreyColor2,
                 height: 42,
                 buttonText: 'Cancel',
                 onTap: () {

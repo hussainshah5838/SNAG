@@ -16,6 +16,10 @@ class Analytics extends StatefulWidget {
 
 class _AnalyticsState extends State<Analytics> {
   int? selectedLabelIndex = 0;
+  // Funnel/filter state
+  int selectedFunnelIndex = 0; // 0: All, 1: In-Store, 2: Online
+  String selectedAgeGroup = 'All';
+  String selectedTimeFilter = 'Month';
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +97,137 @@ class _AnalyticsState extends State<Analytics> {
             ),
           ),
           SizedBox(height: 30),
+
+          // --- Filters: Funnel / Demographics / Time ---
+          // Column(
+          //   crossAxisAlignment: CrossAxisAlignment.stretch,
+          //   children: [
+          //     // Funnel chips
+          //     Row(
+          //       children: List.generate(3, (index) {
+          //         final labels = ['All', 'In-Store', 'Online'];
+          //         final isSelected = selectedFunnelIndex == index;
+          //         return Expanded(
+          //           child: GestureDetector(
+          //             onTap: () {
+          //               setState(() {
+          //                 selectedFunnelIndex = index;
+          //               });
+          //             },
+          //             child: Container(
+          //               padding: EdgeInsets.symmetric(
+          //                 horizontal: 12,
+          //                 vertical: 8,
+          //               ),
+          //               decoration: BoxDecoration(
+          //                 color:
+          //                     isSelected ? kSecondaryColor : kLightBlueColor2,
+          //                 border: Border.all(color: kBlueBorderColor),
+          //                 borderRadius: BorderRadius.circular(50),
+          //               ),
+          //               child: MyText(
+          //                 text: labels[index],
+          //                 size: 13,
+          //                 weight: FontWeight.w500,
+          //                 color: isSelected ? kPrimaryColor : kSecondaryColor,
+          //               ),
+          //             ),
+          //           ),
+          //         );
+          //       }),
+          //     ),
+          //     SizedBox(height: 12),
+          //     // Demographics (Age) and Time filters
+          //     Row(
+          //       children: [
+          //         Expanded(
+          //           child: Container(
+          //             height: 40,
+          //             decoration: BoxDecoration(
+          //               color: kLightBlueColor2,
+          //               border: Border.all(color: kBlueBorderColor),
+          //               borderRadius: BorderRadius.circular(8),
+          //             ),
+          //             child: Row(
+          //               children: [
+          //                 MyText(
+          //                   text: 'Age: $selectedAgeGroup',
+          //                   size: 13,
+          //                   weight: FontWeight.w500,
+          //                 ),
+          //                 Expanded(
+          //                   child: DropdownButtonHideUnderline(
+          //                     child: DropdownButton<String>(
+          //                       value: selectedAgeGroup,
+          //                       items:
+          //                           ['All', '18-24', '25-34', '35-44', '45+']
+          //                               .map(
+          //                                 (e) => DropdownMenuItem(
+          //                                   value: e,
+          //                                   child: MyText(text: e, size: 13),
+          //                                 ),
+          //                               )
+          //                               .toList(),
+          //                       onChanged: (v) {
+          //                         if (v == null) return;
+          //                         setState(() {
+          //                           selectedAgeGroup = v;
+          //                         });
+          //                       },
+          //                     ),
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //           ),
+          //         ),
+          //         Expanded(
+          //           child: Container(
+          //             height: 40,
+          //             decoration: BoxDecoration(
+          //               color: kLightBlueColor2,
+          //               border: Border.all(color: kBlueBorderColor),
+          //               borderRadius: BorderRadius.circular(8),
+          //             ),
+          //             child: Row(
+          //               children: [
+          //                 MyText(
+          //                   text: selectedTimeFilter,
+          //                   size: 13,
+          //                   weight: FontWeight.w500,
+          //                 ),
+          //                 SizedBox(width: 8),
+          //                 Expanded(
+          //                   child: DropdownButtonHideUnderline(
+          //                     child: DropdownButton<String>(
+          //                       value: selectedTimeFilter,
+          //                       items:
+          //                           ['Month', 'Day of week', 'Time']
+          //                               .map(
+          //                                 (e) => DropdownMenuItem(
+          //                                   value: e,
+          //                                   child: MyText(text: e, size: 13),
+          //                                 ),
+          //                               )
+          //                               .toList(),
+          //                       onChanged: (v) {
+          //                         if (v == null) return;
+          //                         setState(() {
+          //                           selectedTimeFilter = v;
+          //                         });
+          //                       },
+          //                     ),
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //     SizedBox(height: 20),
+          //   ],
+          // ),
           selectedLabelIndex == 0
               ? Summary()
               : selectedLabelIndex == 1

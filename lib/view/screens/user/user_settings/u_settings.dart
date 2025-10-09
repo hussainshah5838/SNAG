@@ -2,6 +2,7 @@ import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
 import 'package:snag/main.dart';
+import 'package:snag/view/screens/merchant/settings/faq.dart';
 import 'package:snag/view/screens/user/user_settings/u_contact_support.dart';
 import 'package:snag/view/screens/user/user_settings/u_preferences.dart';
 import 'package:snag/view/screens/user/user_settings/u_profile_settings.dart';
@@ -166,7 +167,7 @@ class _USettingsState extends State<USettings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 5,
+                  itemCount: 4,
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
                       {"title": "Preferences", "image": Assets.imagesSnagScore},
@@ -174,10 +175,7 @@ class _USettingsState extends State<USettings> {
                         "title": "Snag Scorecard",
                         "image": Assets.imagesSnagScore,
                       },
-                      {
-                        "title": "Delete Account",
-                        "image": Assets.imagesDeleteAccount,
-                      },
+
                       {"title": "Share Us", "image": Assets.imagesShareUsIcon},
                       {"title": "Rate Us", "image": Assets.imagesRateUsIcon},
                     ];
@@ -191,12 +189,9 @@ class _USettingsState extends State<USettings> {
                             Get.to(() => USnagScore());
                             break;
                           case 2:
-                            Get.dialog(_deleteAccount());
-                            break;
-                          case 3:
                             Get.dialog(_shareAppDialog());
                             break;
-                          case 4:
+                          case 3:
                             Get.dialog(_feedbackDialog());
                             break;
                         }
@@ -244,9 +239,14 @@ class _USettingsState extends State<USettings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 2,
+                  itemCount: 3,
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
+                      {
+                        "title": "FAQ’s",
+                        "subtitle": "Get help",
+                        "image": Assets.imagesHelpAndFaq,
+                      },
                       {"title": "Support", "image": Assets.imagesSupport},
                       {"title": "Log out", "image": Assets.imagesLogoutIcon},
                     ];
@@ -254,9 +254,12 @@ class _USettingsState extends State<USettings> {
                       onTap: () {
                         switch (index) {
                           case 0:
-                            Get.to(() => UContactSupport());
+                            Get.to(() => Faq());
                             break;
                           case 1:
+                            Get.to(() => UContactSupport());
+                            break;
+                          case 2:
                             Get.dialog(_logoutDialog());
                             break;
                         }
@@ -368,7 +371,7 @@ class _USettingsState extends State<USettings> {
                 ),
                 SizedBox(height: 12),
                 MyBorderButton(
-                  buttonColor: kGreyColor2,
+                  borderColor: kGreyColor2,
                   height: 42,
                   buttonText: 'Cancel',
                   onTap: () {
@@ -437,7 +440,7 @@ class _USettingsState extends State<USettings> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
                   child: RatingBar(
-                    initialRating: 3,
+                    initialRating: 5,
                     minRating: 1,
                     direction: Axis.horizontal,
                     allowHalfRating: false,
@@ -465,7 +468,7 @@ class _USettingsState extends State<USettings> {
                 ),
                 SizedBox(height: 12),
                 MyBorderButton(
-                  buttonColor: kGreyColor2,
+                  borderColor: kGreyColor2,
                   height: 42,
                   buttonText: 'Cancel',
                   onTap: () {
@@ -541,83 +544,7 @@ class _USettingsState extends State<USettings> {
                 ),
                 SizedBox(height: 12),
                 MyBorderButton(
-                  buttonColor: kGreyColor2,
-                  height: 42,
-                  buttonText: 'Cancel',
-                  onTap: () {
-                    Get.back();
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Column _deleteAccount() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Material(
-          color: Colors.transparent,
-          child: Container(
-            margin: AppSizes.DEFAULT,
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: kFillColor,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: kBorderColor, width: 1),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset(Assets.imagesDeleteProfile, height: 48),
-                    GestureDetector(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4, right: 4),
-                        child: Image.asset(Assets.imagesCloseIcon, height: 14),
-                      ),
-                    ),
-                  ],
-                ),
-                MyText(
-                  paddingTop: 16,
-                  text: 'Delete Your Profile?',
-                  size: 20,
-                  weight: FontWeight.w600,
-                  paddingBottom: 8,
-                ),
-                MyText(
-                  text:
-                      'If you delete your profile, all your data and connections will be permanently removed. This can’t be undone.',
-                  size: 15,
-                  lineHeight: 1.5,
-                  weight: FontWeight.w500,
-                  color: kQuaternaryColor,
-                  paddingBottom: 24,
-                ),
-                MyButton(
-                  height: 42,
-                  buttonText: 'Delete',
-                  onTap: () {
-                    Get.back();
-                    // Add your logout logic here
-                  },
-                ),
-                SizedBox(height: 12),
-                MyBorderButton(
-                  buttonColor: kGreyColor2,
+                  borderColor: kGreyColor2,
                   height: 42,
                   buttonText: 'Cancel',
                   onTap: () {

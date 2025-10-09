@@ -44,7 +44,7 @@ class UserAddNewMeetup extends StatelessWidget {
           ),
           MyTextField(
             maxLines: 2,
-            labelText: 'Purpose of Meetup',
+            labelText: 'Message to friends',
             hintText: 'e.g., Catching up with friends, planning an event',
             prefix: Column(
               mainAxisAlignment: MainAxisAlignment.center,

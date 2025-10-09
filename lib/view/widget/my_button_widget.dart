@@ -65,7 +65,7 @@ class MyBorderButton extends StatelessWidget {
     this.weight,
     this.child,
     this.radius,
-    this.buttonColor,
+    this.borderColor,
     this.bgColor,
     this.textColor,
   });
@@ -76,7 +76,7 @@ class MyBorderButton extends StatelessWidget {
   FontWeight? weight;
   Widget? child;
   double? radius;
-  final Color? buttonColor;
+  final Color? borderColor;
   final Color? bgColor;
   final Color? textColor;
 
@@ -87,7 +87,7 @@ class MyBorderButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius ?? 50),
         color: bgColor ?? Colors.transparent,
-        border: Border.all(width: 1.0, color: kBorderColor),
+        border: Border.all(width: 1.0, color: borderColor ?? kBorderColor),
       ),
       child: Material(
         color: Colors.transparent,

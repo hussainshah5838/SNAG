@@ -21,11 +21,14 @@ class _AddNewOfferState extends State<AddNewOffer> {
   String _selectedScanType = 'Percentage Off';
   int? selectedLabelIndex = 0;
   final List<String> labels = ["Basic Info", "Scan Info", "Location Info"];
-  final List<String> _keywords = [
-    'Buy 1 Get 1',
-    'Flash Deal',
-    'Discount %',
+  // Show categories instead of offer-specific keywords
+  final List<String> _categories = [
     'Food & Drink',
+    'Shopping',
+    'Beauty & Wellness',
+    'Entertainment',
+    'Services',
+    'Health & Fitness',
   ];
   final List<String> _statuses = ['Active', 'Expired', 'Scheduled'];
   final List<String> _branches = [
@@ -35,7 +38,7 @@ class _AddNewOfferState extends State<AddNewOffer> {
   ];
   List<String> _selectedStatusesList = [];
   List<String> _selectedBranchesList = [];
-  List<String> _selectedKeywordsList = [];
+  List<String> _selectedCategoriesList = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,7 +161,7 @@ class _AddNewOfferState extends State<AddNewOffer> {
         CustomDropDown(
           labelText: 'Offer Type ',
           hint: 'Select offer type or category...',
-          items: ['Select offer type or category...', 'In Store'],
+          items: ['Select offer type or category...', 'In Store', 'Online'],
           selectedValue: _selectedOfferType,
           prefix: Image.asset(Assets.imagesTag, height: 20),
           onChanged: (v) => setState(() => _selectedOfferType = v),
@@ -167,18 +170,18 @@ class _AddNewOfferState extends State<AddNewOffer> {
           labelText: 'Category / Tags',
           hint: 'E.g., Food & Drink, Shopping',
           isMandatory: false,
-          items: _keywords,
+          items: _categories,
           prefix: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [Image.asset(Assets.imagesTag, height: 20)],
           ),
-          selectedValues: _selectedKeywordsList,
+          selectedValues: _selectedCategoriesList,
           onTap: (String value) {
             setState(() {
-              if (_selectedKeywordsList.contains(value)) {
-                _selectedKeywordsList.remove(value);
+              if (_selectedCategoriesList.contains(value)) {
+                _selectedCategoriesList.remove(value);
               } else {
-                _selectedKeywordsList.add(value);
+                _selectedCategoriesList.add(value);
               }
             });
           },
@@ -203,6 +206,17 @@ class _AddNewOfferState extends State<AddNewOffer> {
             });
           },
         ),
+        MyTextField(
+          prefix: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [Image.asset(Assets.imagesProof, height: 20)],
+          ),
+          maxLines: 4,
+          labelText: 'Terms & Conditions',
+          hintText:
+              'E.g., Valid for dine-in only. Not valid with other offers.',
+          isMandatory: true,
+        ),
       ],
     );
   }
@@ -223,10 +237,10 @@ class _AddNewOfferState extends State<AddNewOffer> {
         MyTextField(
           prefix: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [Image.asset(Assets.imagesPoints, height: 20)],
+            children: [Image.asset(Assets.imagesTag, height: 20)],
           ),
-          labelText: 'Redemption Limit',
-          hintText: '100',
+          labelText: 'Redemption Url',
+          hintText: 'https://yourwebsite.com/redeem',
           isMandatory: false,
         ),
         MyTextField(
