@@ -1,8 +1,10 @@
 import 'package:snag/constants/app_colors.dart';
+import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
 import 'package:snag/main.dart';
 import 'package:snag/view/screens/merchant/settings/faq.dart';
+import 'package:snag/view/screens/notifications/user_notifications.dart';
 import 'package:snag/view/screens/user/user_settings/u_contact_support.dart';
 import 'package:snag/view/screens/user/user_settings/u_preferences.dart';
 import 'package:snag/view/screens/user/user_settings/u_profile_settings.dart';
@@ -13,6 +15,7 @@ import 'package:snag/view/widget/my_button_widget.dart';
 import 'package:snag/view/widget/my_text_field_widget.dart';
 import 'package:snag/view/widget/my_text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 
@@ -102,13 +105,13 @@ class _USettingsState extends State<USettings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 2,
+                  itemCount: 1,
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
-                      {
-                        "title": "Saved Offers",
-                        "image": Assets.imagesSavedOffersIcon,
-                      },
+                      // {
+                      //   "title": "Saved Offers",
+                      //   "image": Assets.imagesSavedOffersIcon,
+                      // },
                       {
                         "title": "Notifications",
                         "image": Assets.imagesNotificationSettings,
@@ -118,7 +121,7 @@ class _USettingsState extends State<USettings> {
                       onTap: () {
                         switch (index) {
                           case 0:
-                            Get.to(() => USavedOffers());
+                            Get.to(() => UserNotifications());
                             break;
                           case 1:
                             break;
@@ -351,13 +354,35 @@ class _USettingsState extends State<USettings> {
                       child: MyTextField(
                         marginBottom: 0,
                         labelText: 'Share link',
-                        hintText: 'https://www.snag.com/referral?user=Kashan!',
+                        hintText: 'https://www.snag.com/referral?user=Kashan',
                       ),
                     ),
                     SizedBox(width: 12),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 18),
-                      child: Image.asset(Assets.imagesCopy, height: 20),
+                    GestureDetector(
+                      onTap: () async {
+                        final link =
+                            'https://www.snag.com/referral?user=Kashan';
+                        final message =
+                            'Hey check out this awesome app:\n$link';
+                        await Clipboard.setData(ClipboardData(text: message));
+                        // show confirmation
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Link copied to clipboard',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: AppFonts.WORK_SANS,
+                              ),
+                            ),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 18),
+                        child: Image.asset(Assets.imagesCopy, height: 20),
+                      ),
                     ),
                   ],
                 ),

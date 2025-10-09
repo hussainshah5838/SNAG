@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Permission required for picking contacts -->
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <application
         android:label="snag"
         android:name="${applicationName}"

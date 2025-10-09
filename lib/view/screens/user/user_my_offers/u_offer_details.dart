@@ -3,6 +3,7 @@ import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
+import 'package:snag/view/screens/user/user_my_offers/u_offer_redeemed.dart';
 import 'package:snag/view/screens/user/user_my_offers/u_snag_it.dart';
 import 'package:snag/view/widget/common_image_view_widget.dart';
 import 'package:snag/view/widget/custom_app_bar_widget.dart';
@@ -239,7 +240,8 @@ class _UOfferDetailsState extends State<UOfferDetails> {
                   buttonText: 'Confirm',
                   onTap: () {
                     Get.back();
-                    Get.to(() => USnagIt());
+                    Get.to(() => UOfferRedeemed());
+                    // Get.to(() => USnagIt());
                   },
                 ),
                 SizedBox(height: 12),

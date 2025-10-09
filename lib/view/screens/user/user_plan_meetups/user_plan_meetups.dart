@@ -18,19 +18,22 @@ class UserPlanMeetups extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: simpleAppBar(
-        leading: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+      appBar: AppBar(
+        titleSpacing: 20,
+        automaticallyImplyLeading: false,
+        title: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: GestureDetector(
-                child: Image.asset(Assets.imagesAddIcon, height: 28),
-                onTap: () {
-                  Get.to(() => UserAddNewMeetup());
-                },
-              ),
+            GestureDetector(
+              onTap: () {
+                Get.to(() => UserAddNewMeetup());
+              },
+              child: Image.asset(Assets.imagesAddIcon, height: 32),
+            ),
+            SizedBox(width: 12),
+            MyText(
+              text: 'Create New Meetup',
+              size: 18,
+              weight: FontWeight.w600,
             ),
           ],
         ),

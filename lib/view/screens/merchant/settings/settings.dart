@@ -1,4 +1,6 @@
+import 'package:flutter/services.dart';
 import 'package:snag/constants/app_colors.dart';
+import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
 import 'package:snag/main.dart';
@@ -392,16 +394,39 @@ class _SettingsState extends State<Settings> {
                       child: MyTextField(
                         marginBottom: 0,
                         labelText: 'Share link',
-                        hintText: 'https://www.snag.com/referral?user=Kashan!',
+                        hintText: 'https://www.snag.com/referral?user=Kashan',
                       ),
                     ),
                     SizedBox(width: 12),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 18),
-                      child: Image.asset(Assets.imagesCopy, height: 20),
+                    GestureDetector(
+                      onTap: () async {
+                        final link =
+                            'https://www.snag.com/referral?user=Kashan';
+                        final message =
+                            'Hey check out this awesome app:\n$link';
+                        await Clipboard.setData(ClipboardData(text: message));
+                        // show confirmation
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Link copied to clipboard',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: AppFonts.WORK_SANS,
+                              ),
+                            ),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 18),
+                        child: Image.asset(Assets.imagesCopy, height: 20),
+                      ),
                     ),
                   ],
                 ),
+
                 SizedBox(height: 30),
                 MyButton(
                   height: 42,

@@ -17,6 +17,7 @@ dependencies:
   expandable: ^5.0.1
   flutter:
     sdk: flutter
+  flutter_native_contact_picker: ^0.0.11
   flutter_rating_bar: ^4.0.1
   flutter_svg: ^2.0.17
   flutter_xlider: ^3.5.0

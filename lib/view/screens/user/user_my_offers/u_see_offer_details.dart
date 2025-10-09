@@ -203,7 +203,7 @@ class _USeeOfferDetailsState extends State<USeeOfferDetails> {
                   buttonText: 'Confirm',
                   onTap: () {
                     Get.back();
-                    Get.to(() => USnagIt());
+                    // Get.to(() => USnagIt());
                   },
                 ),
                 SizedBox(height: 12),

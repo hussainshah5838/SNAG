@@ -19,26 +19,23 @@ class Offers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: simpleAppBar(
-        haveLeading: false,
-        title: '',
-        actions: [
-          Center(
-            child: GestureDetector(
+      appBar: AppBar(
+        titleSpacing: 20,
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            GestureDetector(
               onTap: () {
                 Get.to(() => AddNewOffer());
               },
-              child: MyText(
-                text: 'Add',
-                size: 18,
-                weight: FontWeight.w600,
-                color: kSecondaryColor,
-              ),
+              child: Image.asset(Assets.imagesAddIcon, height: 32),
             ),
-          ),
-          SizedBox(width: 20),
-        ],
+            SizedBox(width: 12),
+            MyText(text: 'Add New Offer', size: 18, weight: FontWeight.w600),
+          ],
+        ),
       ),
+
       body: ListView(
         shrinkWrap: true,
         padding: AppSizes.DEFAULT,
@@ -255,7 +252,11 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 CustomDropDown(
                   labelText: 'Offer Type ',
                   hint: 'Select offer type or category...',
-                  items: ['Select offer type or category...', 'In Store'],
+                  items: [
+                    'Select offer type or category...',
+                    'In Store',
+                    'Online',
+                  ],
                   selectedValue: 'Select offer type or category...',
                   prefix: Image.asset(Assets.imagesKeywords, height: 20),
                   onChanged: (v) {},

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get/route_manager.dart';
 import 'package:sheet/sheet.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
@@ -204,7 +205,7 @@ class _UserHomeState extends State<UserHome> {
             alignment: Alignment.bottomCenter,
             child: Sheet(
               maxExtent: Get.height * 0.8,
-              initialExtent: 230,
+              initialExtent: 150,
               minExtent: 50,
               physics: BouncingSheetPhysics(),
               child: _Sponsored(),
@@ -297,14 +298,38 @@ class _Marker extends StatelessWidget {
   }
 }
 
-class _Sponsored extends StatelessWidget {
+class _Sponsored extends StatefulWidget {
+  const _Sponsored({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, String>> mapTypes = [
+  State<_Sponsored> createState() => _SponsoredState();
+}
+
+class _SponsoredState extends State<_Sponsored> {
+  late final List<Map<String, String>> _mapTypes;
+  late final List<PageController> _pageControllers;
+
+  @override
+  void initState() {
+    super.initState();
+    _mapTypes = [
       {'title': 'H & M', 'image': Assets.imagesHn},
       {'title': 'KFC', 'image': Assets.imagesKfcBanner},
       {'title': 'Burger King', 'image': Assets.imagesBurger},
     ];
+    _pageControllers = List.generate(_mapTypes.length, (_) => PageController());
+  }
+
+  @override
+  void dispose() {
+    for (final c in _pageControllers) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       height: Get.height * 0.8,
       width: Get.width,
@@ -335,7 +360,7 @@ class _Sponsored extends StatelessWidget {
                 return SizedBox(height: 20);
               },
               shrinkWrap: true,
-              itemCount: mapTypes.length,
+              itemCount: _mapTypes.length,
               padding: AppSizes.ZERO,
               physics: BouncingScrollPhysics(),
               itemBuilder: (context, index) {
@@ -343,24 +368,59 @@ class _Sponsored extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _headingRow(
-                      title: mapTypes[index]['title'],
+                      title: _mapTypes[index]['title'],
                       onMore: () {
                         Get.bottomSheet(
                           _ViewSponsorDetails(
-                            title: mapTypes[index]['title']!,
-                            image: '${mapTypes[index]['image']}',
+                            title: _mapTypes[index]['title']!,
+                            image: '${_mapTypes[index]['image']}',
                           ),
                           isScrollControlled: true,
                         );
                       },
                     ),
                     SizedBox(height: 8),
-                    CommonImageView(
+                    SizedBox(
                       height: 140,
-                      width: Get.width,
-                      radius: 8,
-                      imagePath: mapTypes[index]['image'],
-                      fit: BoxFit.cover,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            PageView.builder(
+                              itemCount: 3,
+                              physics: BouncingScrollPhysics(),
+                              controller: _pageControllers[index],
+                              itemBuilder: (context, pageIndex) {
+                                // Hardcoded images for demonstration
+                                final images = [
+                                  _mapTypes[index]['image']!,
+                                  Assets.imagesKfcBanner,
+                                  Assets.imagesBurger,
+                                ];
+                                return Image.asset(
+                                  images[pageIndex],
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                );
+                              },
+                            ),
+                            Positioned(
+                              bottom: 8,
+                              child: SmoothPageIndicator(
+                                controller: _pageControllers[index],
+                                count: 3,
+                                effect: WormEffect(
+                                  dotHeight: 8,
+                                  dotWidth: 8,
+                                  activeDotColor: kSecondaryColor,
+                                  dotColor: kLightBlueColor2,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 );
