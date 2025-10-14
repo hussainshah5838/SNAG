@@ -15,7 +15,7 @@ class USnagScore extends StatefulWidget {
 }
 
 class _USnagScoreState extends State<USnagScore> {
-  double _value = 65;
+  double _value = 100;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

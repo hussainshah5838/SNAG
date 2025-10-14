@@ -3,12 +3,16 @@ import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
 import 'package:snag/main.dart';
+import 'package:snag/view/screens/merchant/billing_payments/billing_payments.dart';
 import 'package:snag/view/screens/merchant/settings/faq.dart';
+import 'package:snag/view/screens/merchant/settings/locations/business_locations.dart';
 import 'package:snag/view/screens/notifications/user_notifications.dart';
 import 'package:snag/view/screens/user/user_settings/u_contact_support.dart';
 import 'package:snag/view/screens/user/user_settings/u_preferences.dart';
 import 'package:snag/view/screens/user/user_settings/u_profile_settings.dart';
 import 'package:snag/view/screens/user/user_settings/u_saved_offers.dart';
+import 'package:snag/view/screens/user/user_settings/u_shipping_address/address_contact_info.dart';
+import 'package:snag/view/screens/user/user_settings/u_shipping_address/shipping_address.dart';
 import 'package:snag/view/screens/user/user_settings/u_snag_score.dart';
 import 'package:snag/view/widget/common_image_view_widget.dart';
 import 'package:snag/view/widget/my_button_widget.dart';
@@ -105,13 +109,19 @@ class _USettingsState extends State<USettings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 1,
+                  itemCount: 3,
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
-                      // {
-                      //   "title": "Saved Offers",
-                      //   "image": Assets.imagesSavedOffersIcon,
-                      // },
+                      {
+                        "title": "Shipping Address",
+                        "subtitle": "Manage shipping addresses.",
+                        "image": Assets.imagesYourLocations,
+                      },
+                      {
+                        "title": "Billing & Payments",
+                        "subtitle": "Manage payments and billing.",
+                        "image": Assets.imagesBillingPayments,
+                      },
                       {
                         "title": "Notifications",
                         "image": Assets.imagesNotificationSettings,
@@ -121,9 +131,13 @@ class _USettingsState extends State<USettings> {
                       onTap: () {
                         switch (index) {
                           case 0:
-                            Get.to(() => UserNotifications());
+                            Get.to(() => ShippingAddress());
                             break;
                           case 1:
+                            Get.to(() => BillingPayments());
+                            break;
+                          case 2:
+                            Get.to(() => UserNotifications());
                             break;
                         }
                       },
