@@ -206,6 +206,10 @@ class Assets {
   /// assets/images/date.png
   static const String imagesDate = "assets/images/date.png";
 
+  /// Assets for imagesDd
+  /// assets/images/dd.png
+  static const String imagesDd = "assets/images/dd.png";
+
   /// Assets for imagesDeleteAccount
   /// assets/images/delete_account.png
   static const String imagesDeleteAccount = "assets/images/delete_account.png";
@@ -249,6 +253,10 @@ class Assets {
   /// Assets for imagesDropdown
   /// assets/images/dropdown.png
   static const String imagesDropdown = "assets/images/dropdown.png";
+
+  /// Assets for imagesDt
+  /// assets/images/dt.png
+  static const String imagesDt = "assets/images/dt.png";
 
   /// Assets for imagesDummyMap
   /// assets/images/dummy_map.png

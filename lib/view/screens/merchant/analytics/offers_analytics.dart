@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
+import 'package:snag/view/widget/custom_drop_down_widget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:snag/constants/app_sizes.dart';
 import 'package:snag/view/widget/my_text_widget.dart';
@@ -22,7 +23,7 @@ class OffersAnalytics extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: kFillColor,
             borderRadius: BorderRadius.circular(12),
@@ -32,76 +33,40 @@ class OffersAnalytics extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
+                spacing: 4,
                 children: [
                   Expanded(
                     child: MyText(
                       text: 'Funnel Report',
-                      size: 14,
+                      size: 13,
                       weight: FontWeight.w600,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 80,
-                      padding: EdgeInsets.symmetric(horizontal: 6),
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: kLightBlueColor2,
-                        border: Border.all(color: kBlueBorderColor),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: MyText(
-                              paddingLeft: 4,
-                              text: 'Gender',
-                              size: 12,
-                              weight: FontWeight.w600,
-                              color: kSecondaryColor,
-                            ),
-                          ),
-                          Image.asset(
-                            Assets.imagesDropdown,
-                            height: 16,
-                            color: kSecondaryColor,
-                          ),
-                        ],
-                      ),
+                  SizedBox(
+                    width: 55,
+                    child: AnOtherDropDown(
+                      hint: 'Age',
+                      items: ['Age', '18-24', '25-34', '35-44'],
+                      selectedValue: 'Age',
+                      onChanged: (value) {},
                     ),
                   ),
-                  SizedBox(width: 6),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 90,
-                      height: 32,
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: kLightBlueColor2,
-                        border: Border.all(color: kBlueBorderColor),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: MyText(
-                              paddingLeft: 4,
-                              text: 'Industry',
-                              size: 12,
-                              weight: FontWeight.w600,
-                              color: kSecondaryColor,
-                            ),
-                          ),
-                          Image.asset(
-                            Assets.imagesDropdown,
-                            height: 16,
-                            color: kSecondaryColor,
-                          ),
-                        ],
-                      ),
+                  SizedBox(
+                    width: 60,
+                    child: AnOtherDropDown(
+                      hint: 'Type',
+                      items: ['Type', 'New', 'Returning'],
+                      selectedValue: 'Type',
+                      onChanged: (value) {},
+                    ),
+                  ),
+                  SizedBox(
+                    width: 70,
+                    child: AnOtherDropDown(
+                      hint: 'Month',
+                      items: ['Month', 'Jan', 'Feb', 'Mar'],
+                      selectedValue: 'Month',
+                      onChanged: (value) {},
                     ),
                   ),
                 ],
@@ -127,7 +92,7 @@ class OffersAnalytics extends StatelessWidget {
         SizedBox(height: 20),
 
         Container(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: kFillColor,
             borderRadius: BorderRadius.circular(12),
@@ -137,76 +102,37 @@ class OffersAnalytics extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
+                spacing: 4,
                 children: [
                   Expanded(
                     child: MyText(
                       text: 'Redemptions',
-                      size: 14,
+                      size: 13,
                       weight: FontWeight.w600,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 90,
-                      height: 32,
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: kLightBlueColor2,
-                        border: Border.all(color: kBlueBorderColor),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: MyText(
-                              paddingLeft: 4,
-                              text: 'Industry',
-                              size: 12,
-                              weight: FontWeight.w600,
-                              color: kSecondaryColor,
-                            ),
-                          ),
-                          Image.asset(
-                            Assets.imagesDropdown,
-                            height: 16,
-                            color: kSecondaryColor,
-                          ),
-                        ],
-                      ),
+                  SizedBox(
+                    width: 90,
+                    child: AnOtherDropDown(
+                      hint: 'Industry',
+                      items: [
+                        'Industry',
+                        'Retail',
+                        'E-commerce',
+                        'Food & Beverage',
+                        'Travel',
+                      ],
+                      selectedValue: 'Industry',
+                      onChanged: (value) {},
                     ),
                   ),
-                  SizedBox(width: 6),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 85,
-                      padding: EdgeInsets.symmetric(horizontal: 6),
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: kLightBlueColor2,
-                        border: Border.all(color: kBlueBorderColor),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: MyText(
-                              paddingLeft: 4,
-                              text: 'Location',
-                              size: 12,
-                              weight: FontWeight.w600,
-                              color: kSecondaryColor,
-                            ),
-                          ),
-                          Image.asset(
-                            Assets.imagesDropdown,
-                            height: 16,
-                            color: kSecondaryColor,
-                          ),
-                        ],
-                      ),
+                  SizedBox(
+                    width: 85,
+                    child: AnOtherDropDown(
+                      hint: 'Location',
+                      items: ['Location', 'Urban', 'Suburban', 'Rural'],
+                      selectedValue: 'Location',
+                      onChanged: (value) {},
                     ),
                   ),
                 ],
@@ -232,7 +158,7 @@ class OffersAnalytics extends StatelessWidget {
         SizedBox(height: 20),
 
         Container(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: kFillColor,
             borderRadius: BorderRadius.circular(12),
@@ -251,35 +177,13 @@ class OffersAnalytics extends StatelessWidget {
                     ),
                   ),
 
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 70,
-                      padding: EdgeInsets.symmetric(horizontal: 6),
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: kLightBlueColor2,
-                        border: Border.all(color: kBlueBorderColor),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: MyText(
-                              paddingLeft: 4,
-                              text: 'Offer',
-                              size: 12,
-                              weight: FontWeight.w600,
-                              color: kSecondaryColor,
-                            ),
-                          ),
-                          Image.asset(
-                            Assets.imagesDropdown,
-                            height: 16,
-                            color: kSecondaryColor,
-                          ),
-                        ],
-                      ),
+                  SizedBox(
+                    width: 70,
+                    child: AnOtherDropDown(
+                      hint: 'Offer',
+                      items: ['Offer'],
+                      selectedValue: 'Offer',
+                      onChanged: (value) {},
                     ),
                   ),
                 ],

@@ -147,17 +147,18 @@ class _UOfferDetailsState extends State<UOfferDetails> {
           ),
         ),
         SizedBox(height: 20),
-        ...List.generate(3, (index) {
+        ...List.generate(4, (index) {
           final List<Map<String, String>> details = [
             {
               'icon': Assets.imagesBank,
               'value': 'XYS Street,  123 lane, 34660, San Francisco Bay Area.',
             },
+            {'icon': Assets.imagesDt, 'value': 'In-Store'},
             {
               'icon': Assets.imagesTime,
               'value': '9 August, 2025 - 21 August, 2025',
             },
-            {'icon': Assets.imagesLocationType, 'value': 'In-Store Offer'},
+            {'icon': Assets.imagesLocationType, 'value': 'Main Branch'},
           ];
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),

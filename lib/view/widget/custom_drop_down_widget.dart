@@ -346,3 +346,84 @@ class _MultiDropDownState extends State<MultiDropDown> {
     );
   }
 }
+
+class AnOtherDropDown extends StatelessWidget {
+  AnOtherDropDown({
+    required this.hint,
+    required this.items,
+    required this.selectedValue,
+    required this.onChanged,
+  });
+
+  final List<dynamic>? items;
+  String selectedValue;
+  final ValueChanged<dynamic>? onChanged;
+  String hint;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton2(
+        items:
+            items!
+                .map(
+                  (item) => DropdownMenuItem<dynamic>(
+                    value: item,
+                    child: MyText(
+                      text: item,
+                      size: 10,
+                      maxLines: 1,
+                      textOverflow: TextOverflow.ellipsis,
+                      weight: FontWeight.w600,
+                      color: kSecondaryColor,
+                    ),
+                  ),
+                )
+                .toList(),
+        value: selectedValue,
+        onChanged: onChanged,
+        iconStyleData: IconStyleData(icon: SizedBox()),
+        isDense: true,
+        isExpanded: false,
+        customButton: Container(
+          height: 30,
+          padding: EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            color: kLightBlueColor2,
+            border: Border.all(color: kBlueBorderColor),
+            borderRadius: BorderRadius.circular(50),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: MyText(
+                  paddingLeft: 6,
+                  text: selectedValue == hint ? hint : selectedValue,
+                  size: 12,
+                  maxLines: 1,
+                  textOverflow: TextOverflow.ellipsis,
+                  weight: FontWeight.w600,
+                  color: kSecondaryColor,
+                ),
+              ),
+              Image.asset(Assets.imagesDd, height: 5, color: kSecondaryColor),
+              SizedBox(width: 4),
+            ],
+          ),
+        ),
+        menuItemStyleData: MenuItemStyleData(height: 30),
+        dropdownStyleData: DropdownStyleData(
+          elevation: 6,
+          padding: EdgeInsets.zero,
+          maxHeight: 300,
+          offset: Offset(0, -5),
+          decoration: BoxDecoration(
+            color: kLightBlueColor2,
+            border: Border.all(color: kBlueBorderColor),
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
+    );
+  }
+}

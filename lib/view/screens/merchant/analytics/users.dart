@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
+import 'package:snag/view/widget/custom_drop_down_widget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:snag/constants/app_sizes.dart';
 import 'package:snag/view/widget/my_text_widget.dart';
@@ -41,34 +42,13 @@ class Users extends StatelessWidget {
                       weight: FontWeight.w600,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 95,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: kLightBlueColor2,
-                        border: Border.all(color: kBlueBorderColor),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        spacing: 4,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          MyText(
-                            paddingLeft: 2,
-                            text: 'Location',
-                            size: 12,
-                            weight: FontWeight.w600,
-                            color: kSecondaryColor,
-                          ),
-                          Image.asset(
-                            Assets.imagesDropdown,
-                            height: 16,
-                            color: kSecondaryColor,
-                          ),
-                        ],
-                      ),
+                  SizedBox(
+                    width: 85,
+                    child: AnOtherDropDown(
+                      hint: 'Location',
+                      items: ['Location', 'Urban', 'Suburban', 'Rural'],
+                      selectedValue: 'Location',
+                      onChanged: (value) {},
                     ),
                   ),
                 ],
@@ -112,34 +92,13 @@ class Users extends StatelessWidget {
                       weight: FontWeight.w600,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 95,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: kLightBlueColor2,
-                        border: Border.all(color: kBlueBorderColor),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        spacing: 4,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          MyText(
-                            paddingLeft: 2,
-                            text: 'Location',
-                            size: 12,
-                            weight: FontWeight.w600,
-                            color: kSecondaryColor,
-                          ),
-                          Image.asset(
-                            Assets.imagesDropdown,
-                            height: 16,
-                            color: kSecondaryColor,
-                          ),
-                        ],
-                      ),
+                  SizedBox(
+                    width: 85,
+                    child: AnOtherDropDown(
+                      hint: 'Location',
+                      items: ['Location', 'Urban', 'Suburban', 'Rural'],
+                      selectedValue: 'Location',
+                      onChanged: (value) {},
                     ),
                   ),
                 ],
