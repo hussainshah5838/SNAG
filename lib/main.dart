@@ -7,7 +7,7 @@ import 'config/theme/light_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.put(ChooseUserController());
+  Get.put(UserController());
   runApp(MyApp());
 }
 

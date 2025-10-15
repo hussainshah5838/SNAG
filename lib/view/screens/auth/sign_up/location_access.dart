@@ -50,7 +50,9 @@ class LocationAccess extends StatelessWidget {
                 ),
                 MyText(
                   text:
-                      'To help customers discover your offers, Snag needs permission to access your location while you use the app. We use your location to accurately tag your branches on the map, show your deals to customers nearby, and guide them with precise directions. Your location data is used only to improve the visibility of your business and is never sold to third parties. You can update your permission settings anytime in your device preferences.',
+                      UserController.instance.currentRole == UserRole.merchant
+                          ? 'To help customers discover your offers, Snag needs permission to access your location while you use the app. We use your location to accurately tag your branches on the map, show your deals to customers nearby, and guide them with precise directions. Your location data is used only to improve the visibility of your business and is never sold to third parties. You can update your permission settings anytime in your device preferences.'
+                          : 'Your location data is used to personalize your experience based on your selected interests and help you discover the best offers around you.\n\nYou have full control and can change your permission preferences anytime in your device settings.',
                   size: 16,
                   lineHeight: 1.5,
                   weight: FontWeight.w500,

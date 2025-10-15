@@ -155,19 +155,17 @@ class _LoginBottomSheet extends StatelessWidget {
                 Obx(
                   () => MyText(
                     text:
-                        (ChooseUserController.instance.currentRole ==
+                        (UserController.instance.currentRole ==
                                     UserRole.merchant
                                 ? 'User'
                                 : 'Merchant')
                             .toUpperCase(),
                     onTap: () {
-                      if (ChooseUserController.instance.currentRole ==
+                      if (UserController.instance.currentRole ==
                           UserRole.merchant) {
-                        ChooseUserController.instance.selectRole(UserRole.user);
+                        UserController.instance.selectRole(UserRole.user);
                       } else {
-                        ChooseUserController.instance.selectRole(
-                          UserRole.merchant,
-                        );
+                        UserController.instance.selectRole(UserRole.merchant);
                       }
                     },
                     decoration: TextDecoration.underline,

@@ -2,13 +2,13 @@ import 'package:get/get.dart';
 
 enum UserRole { user, merchant }
 
-class ChooseUserController extends GetxController {
-  static final ChooseUserController instance = Get.find<ChooseUserController>();
-  final Rx<UserRole> selectedRole = UserRole.user.obs;
+class UserController extends GetxController {
+  static final UserController instance = Get.find<UserController>();
+  final Rx<UserRole> role = UserRole.user.obs;
 
   void selectRole(UserRole role) {
-    selectedRole.value = role;
+    this.role.value = role;
   }
 
-  UserRole get currentRole => selectedRole.value;
+  UserRole get currentRole => role.value;
 }
