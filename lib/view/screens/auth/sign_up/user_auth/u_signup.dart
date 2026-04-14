@@ -1,4 +1,5 @@
 import 'package:snag/constants/app_sizes.dart';
+import 'package:snag/controllers/auth_controller.dart';
 import 'package:snag/view/screens/auth/login.dart';
 import 'package:snag/view/screens/auth/sign_up/otp_verification.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,61 @@ class _USignUpState extends State<USignUp> {
   }
 }
 
-class _SignUpBottomSheet extends StatelessWidget {
+class _SignUpBottomSheet extends StatefulWidget {
+  @override
+  State<_SignUpBottomSheet> createState() => _SignUpBottomSheetState();
+}
+
+class _SignUpBottomSheetState extends State<_SignUpBottomSheet> {
+  final _userNameController = TextEditingController();
+  final _phoneController    = TextEditingController();
+  final _emailController    = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  bool _termsAccepted   = false;
+  bool _obscurePassword = true;
+
+  final _auth = AuthController.instance;
+
+  @override
+  void dispose() {
+    _userNameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onSendCode() async {
+    if (_userNameController.text.trim().isEmpty ||
+        _phoneController.text.trim().isEmpty ||
+        _emailController.text.trim().isEmpty ||
+        _passwordController.text.isEmpty) {
+      Get.snackbar('Error', 'Please fill in all fields',
+          backgroundColor: kRedColor, colorText: kPrimaryColor);
+      return;
+    }
+    if (!_termsAccepted) {
+      Get.snackbar('Error', 'Please accept the terms and conditions',
+          backgroundColor: kRedColor, colorText: kPrimaryColor);
+      return;
+    }
+
+    final success = await _auth.clientRegister(
+      userName:    _userNameController.text.trim(),
+      phoneNumber: _phoneController.text.trim(),
+      email:       _emailController.text.trim(),
+      password:    _passwordController.text,
+    );
+
+    if (success) {
+      Get.to(() => OTPVerification());
+    } else {
+      Get.snackbar('Error', _auth.errorMsg.value,
+          backgroundColor: kRedColor, colorText: kPrimaryColor);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -74,15 +129,14 @@ class _SignUpBottomSheet extends StatelessWidget {
         physics: BouncingScrollPhysics(),
         children: [
           MyText(
-            text: 'Let’s get some details in',
+            text: "Let's get some details in",
             paddingTop: 8,
             size: 24,
             weight: FontWeight.w600,
             paddingBottom: 8,
           ),
           MyText(
-            text:
-                'Create your profile, share your world, & start connecting with people.',
+            text: 'Create your profile, share your world, & start connecting with people.',
             size: 16,
             lineHeight: 1.5,
             weight: FontWeight.w500,
@@ -90,6 +144,7 @@ class _SignUpBottomSheet extends StatelessWidget {
             paddingBottom: 30,
           ),
           MyTextField(
+            controller: _userNameController,
             labelText: 'User Name',
             hintText: 'Write your user name',
             prefix: Column(
@@ -97,8 +152,8 @@ class _SignUpBottomSheet extends StatelessWidget {
               children: [Image.asset(Assets.imagesName, height: 20)],
             ),
           ),
-
           MyTextField(
+            controller: _phoneController,
             labelText: 'Phone Number',
             hintText: 'Enter your number',
             prefix: Column(
@@ -107,6 +162,7 @@ class _SignUpBottomSheet extends StatelessWidget {
             ),
           ),
           MyTextField(
+            controller: _emailController,
             labelText: 'Email',
             hintText: 'Enter your email',
             prefix: Column(
@@ -115,17 +171,25 @@ class _SignUpBottomSheet extends StatelessWidget {
             ),
           ),
           MyTextField(
+            controller: _passwordController,
             marginBottom: 20,
             labelText: 'Password',
             hintText: '*********',
-            suffix: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [Image.asset(Assets.imagesVisibility, height: 20)],
+            isObSecure: _obscurePassword,
+            suffix: GestureDetector(
+              onTap: () => setState(() => _obscurePassword = !_obscurePassword),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Image.asset(Assets.imagesVisibility, height: 20)],
+              ),
             ),
           ),
           Row(
             children: [
-              CustomCheckBox(isActive: false, onTap: () {}),
+              CustomCheckBox(
+                isActive: _termsAccepted,
+                onTap: () => setState(() => _termsAccepted = !_termsAccepted),
+              ),
               Expanded(
                 child: MyText(
                   paddingLeft: 10,
@@ -138,12 +202,18 @@ class _SignUpBottomSheet extends StatelessWidget {
             ],
           ),
           SizedBox(height: 30),
-          MyButton(
+          Obx(() => MyButton(
             buttonText: 'Send Code',
-            onTap: () {
-              Get.to(() => OTPVerification());
-            },
-          ),
+            onTap: _auth.isLoading.value ? () {} : _onSendCode,
+            customChild: _auth.isLoading.value
+                ? SizedBox(
+                    height: 22,
+                    width: 22,
+                    child: CircularProgressIndicator(
+                        color: kPrimaryColor, strokeWidth: 2.5),
+                  )
+                : null,
+          )),
           SizedBox(height: 25),
           Center(
             child: Wrap(

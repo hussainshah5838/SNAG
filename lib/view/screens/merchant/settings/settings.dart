@@ -3,6 +3,8 @@ import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
+import 'package:snag/controllers/auth_controller.dart';
+import 'package:snag/controllers/merchant_profile_controller.dart';
 import 'package:snag/main.dart';
 import 'package:snag/view/screens/merchant/billing_payments/billing_payments.dart';
 import 'package:snag/view/screens/merchant/settings/faq.dart';
@@ -25,65 +27,81 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   Set<int> selectedIndices = {};
+  final _authController = AuthController.instance;
+  final _profileController = Get.put(MerchantProfileController());
+
+  @override
+  void initState() {
+    super.initState();
+    _profileController.fetchBranchProfile();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            margin: EdgeInsets.only(left: 20, right: 20, top: 55),
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: kFillColor,
-              border: Border.all(color: kBorderColor, width: 1),
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: Row(
-              children: [
-                CommonImageView(
-                  url: dummyImg,
-                  height: 48,
-                  width: 48,
-                  fit: BoxFit.cover,
-                  radius: 100,
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MyText(
-                        text: "Kashan Ali",
-                        size: 16,
-                        weight: FontWeight.w500,
-                        paddingBottom: 4,
-                      ),
-                      MyText(
-                        text: "kashan7@gmail.com",
-                        size: 14,
-                        maxLines: 2,
-                        weight: FontWeight.w500,
-                        textOverflow: TextOverflow.ellipsis,
-                        color: kSecondaryColor,
-                      ),
-                    ],
+          Obx(() {
+            final isLoading = _profileController.isLoading.value;
+            final branchName = _profileController.branchName ?? 'Loading...';
+            final email = _authController.user.value?.email ?? '';
+            final logoUrl = _profileController.logoUrl;
+
+            return Container(
+              margin: EdgeInsets.only(left: 20, right: 20, top: 55),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: kFillColor,
+                border: Border.all(color: kBorderColor, width: 1),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Row(
+                children: [
+                  CommonImageView(
+                    url: logoUrl ?? dummyImg,
+                    height: 48,
+                    width: 48,
+                    fit: BoxFit.cover,
+                    radius: 100,
                   ),
-                ),
-                SizedBox(width: 16),
-                MyText(
-                  onTap: () {
-                    Get.to(() => EditProfile());
-                  },
-                  text: "Edit",
-                  size: 14,
-                  color: kSecondaryColor,
-                  weight: FontWeight.w600,
-                  paddingRight: 8,
-                ),
-              ],
-            ),
-          ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MyText(
+                          text: isLoading ? 'Loading...' : branchName,
+                          size: 16,
+                          weight: FontWeight.w500,
+                          paddingBottom: 4,
+                        ),
+                        MyText(
+                          text: email,
+                          size: 14,
+                          maxLines: 2,
+                          weight: FontWeight.w500,
+                          textOverflow: TextOverflow.ellipsis,
+                          color: kSecondaryColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  MyText(
+                    onTap: () {
+                      Get.to(() => EditProfile());
+                    },
+                    text: "Edit",
+                    size: 14,
+                    color: kSecondaryColor,
+                    weight: FontWeight.w600,
+                    paddingRight: 8,
+                  ),
+                ],
+              ),
+            );
+          }),
 
           Expanded(
             child: ListView(
@@ -603,9 +621,9 @@ class _SettingsState extends State<Settings> {
                 MyButton(
                   height: 42,
                   buttonText: 'Confirm',
-                  onTap: () {
-                    Get.back();
-                    // Add your logout logic here
+                  onTap: () async {
+                    Get.back(); // Close dialog
+                    await _authController.logout();
                   },
                 ),
                 SizedBox(height: 12),
@@ -679,9 +697,9 @@ class _SettingsState extends State<Settings> {
                 MyButton(
                   height: 42,
                   buttonText: 'Delete',
-                  onTap: () {
-                    Get.back();
-                    // Add your logout logic here
+                  onTap: () async {
+                    Get.back(); // Close dialog
+                    await _authController.deleteAccount();
                   },
                 ),
                 SizedBox(height: 12),

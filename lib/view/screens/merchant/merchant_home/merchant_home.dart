@@ -13,9 +13,22 @@ import 'package:snag/view/widget/my_button_widget.dart';
 import 'package:snag/view/widget/my_text_field_widget.dart';
 import 'package:snag/view/widget/my_text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:snag/controllers/merchant_offers_controller.dart';
 
-// ignore: must_be_immutable
-class MerchantHome extends StatelessWidget {
+class MerchantHome extends StatefulWidget {
+  @override
+  State<MerchantHome> createState() => _MerchantHomeState();
+}
+
+class _MerchantHomeState extends State<MerchantHome> {
+  final controller = Get.put(MerchantOffersController());
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchDashboardStats();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,74 +90,113 @@ class MerchantHome extends StatelessWidget {
             ],
           ),
           SizedBox(height: 12),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: BouncingScrollPhysics(),
-            padding: AppSizes.ZERO,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              mainAxisExtent: 122,
-            ),
-            itemCount: 4,
-            itemBuilder: (BuildContext context, int index) {
-              final List<Map<String, dynamic>> stats = [
-                {
-                  'icon': Assets.imagesTotalRedemptions,
-                  'label': 'Active Offers',
-                  'value': '5',
-                },
-                {
-                  'icon': Assets.imagesSavedOffers,
-                  'label': 'Saved Offers',
-                  'value': '12',
-                },
-                {
-                  'icon': Assets.imagesExpiredOffers,
-                  'label': 'Expired Offers',
-                  'value': '12',
-                },
-                {
-                  'icon': Assets.imagesDrafted,
-                  'label': 'Drafted Offers',
-                  'value': '8',
-                },
-              ];
-              final stat = stats[index];
+          Obx(() {
+            if (controller.isLoadingStats.value) {
               return Container(
-                decoration: BoxDecoration(
-                  color: kFillColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: kBorderColor, width: 1.0),
-                ),
-                padding: EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset(stat['icon'], height: 24, width: 24),
-                      ],
-                    ),
-                    Spacer(),
-                    MyText(
-                      text: stat['label'],
-                      size: 14,
-                      weight: FontWeight.w500,
-                      paddingBottom: 6,
-                    ),
-                    MyText(
-                      text: stat['value'],
-                      size: 24,
-                      fontFamily: GoogleFonts.dmSans().fontFamily,
-                      weight: FontWeight.w700,
-                    ),
-                  ],
+                height: 254,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            if (controller.statsError.value != null) {
+              return Container(
+                height: 254,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 48, color: Colors.red),
+                      SizedBox(height: 12),
+                      MyText(
+                        text: 'Failed to load stats',
+                        size: 14,
+                        color: kQuaternaryColor,
+                      ),
+                      SizedBox(height: 8),
+                      TextButton(
+                        onPressed: controller.fetchDashboardStats,
+                        child: MyText(
+                          text: 'Retry',
+                          size: 14,
+                          color: kSecondaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
-            },
-          ),
+            }
+
+            final List<Map<String, dynamic>> stats = [
+              {
+                'icon': Assets.imagesTotalRedemptions,
+                'label': 'Active Offers',
+                'value': controller.activeOffers.value.toString(),
+              },
+              {
+                'icon': Assets.imagesSavedOffers,
+                'label': 'Saved Offers',
+                'value': controller.savedOffers.value.toString(),
+              },
+              {
+                'icon': Assets.imagesExpiredOffers,
+                'label': 'Expired Offers',
+                'value': controller.expiredOffers.value.toString(),
+              },
+              {
+                'icon': Assets.imagesDrafted,
+                'label': 'Drafted Offers',
+                'value': controller.draftedOffers.value.toString(),
+              },
+            ];
+
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+              padding: AppSizes.ZERO,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                mainAxisExtent: 122,
+              ),
+              itemCount: 4,
+              itemBuilder: (BuildContext context, int index) {
+                final stat = stats[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    color: kFillColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: kBorderColor, width: 1.0),
+                  ),
+                  padding: EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Image.asset(stat['icon'], height: 24, width: 24),
+                        ],
+                      ),
+                      Spacer(),
+                      MyText(
+                        text: stat['label'],
+                        size: 14,
+                        weight: FontWeight.w500,
+                        paddingBottom: 6,
+                      ),
+                      MyText(
+                        text: stat['value'],
+                        size: 24,
+                        fontFamily: GoogleFonts.dmSans().fontFamily,
+                        weight: FontWeight.w700,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }),
           SizedBox(height: 25),
           Row(
             children: [
@@ -170,97 +222,103 @@ class MerchantHome extends StatelessWidget {
             ],
           ),
           SizedBox(height: 12),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: BouncingScrollPhysics(),
-            padding: AppSizes.ZERO,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              mainAxisExtent: 122,
-            ),
-            itemCount: 2,
-            itemBuilder: (BuildContext context, int index) {
-              final List<Map<String, dynamic>> stats = [
-                {
-                  'icon': Assets.imagesTotalRedemptions,
-                  'percent': '40%',
-                  'percentColor': kGreenColor,
-                  'percentText': ' vs Last Month',
-                  'label': 'Total Redemptions',
-                  'value': '45',
-                },
-                {
-                  'icon': Assets.imagesDollar,
-                  'percent': '32%',
-                  'percentColor': kGreenColor,
-                  'percentText': ' vs Last Month',
-                  'label': 'Total Impressions',
-                  'value': '12,677',
-                },
-              ];
-              final stat = stats[index];
-              return Container(
-                decoration: BoxDecoration(
-                  color: kFillColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: kBorderColor, width: 1.0),
-                ),
-                padding: EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset(stat['icon'], height: 24, width: 24),
-                        Expanded(
-                          child: RichText(
-                            textAlign: TextAlign.end,
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: stat['percent'],
-                                  style: TextStyle(
-                                    fontFamily: AppFonts.WORK_SANS,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 10,
-                                    color: stat['percentColor'],
+          Obx(() {
+            final redemptionsChange = controller.redemptionsChange.value;
+            final impressionsChange = controller.impressionsChange.value;
+            
+            final List<Map<String, dynamic>> stats = [
+              {
+                'icon': Assets.imagesTotalRedemptions,
+                'percent': '${redemptionsChange.abs()}%',
+                'percentColor': redemptionsChange >= 0 ? kGreenColor : Colors.red,
+                'percentText': ' vs Last Month',
+                'label': 'Total Redemptions',
+                'value': controller.totalRedemptions.value.toString(),
+              },
+              {
+                'icon': Assets.imagesDollar,
+                'percent': '${impressionsChange.abs()}%',
+                'percentColor': impressionsChange >= 0 ? kGreenColor : Colors.red,
+                'percentText': ' vs Last Month',
+                'label': 'Total Impressions',
+                'value': controller.totalImpressions.value.toString(),
+              },
+            ];
+
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+              padding: AppSizes.ZERO,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                mainAxisExtent: 122,
+              ),
+              itemCount: 2,
+              itemBuilder: (BuildContext context, int index) {
+                final stat = stats[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    color: kFillColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: kBorderColor, width: 1.0),
+                  ),
+                  padding: EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Image.asset(stat['icon'], height: 24, width: 24),
+                          Expanded(
+                            child: RichText(
+                              textAlign: TextAlign.end,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: stat['percent'],
+                                    style: TextStyle(
+                                      fontFamily: AppFonts.WORK_SANS,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 10,
+                                      color: stat['percentColor'],
+                                    ),
                                   ),
-                                ),
-                                TextSpan(
-                                  text: stat['percentText'],
-                                  style: TextStyle(
-                                    color: kTertiaryColor,
-                                    fontFamily: AppFonts.WORK_SANS,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 10,
+                                  TextSpan(
+                                    text: stat['percentText'],
+                                    style: TextStyle(
+                                      color: kTertiaryColor,
+                                      fontFamily: AppFonts.WORK_SANS,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 10,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Spacer(),
-                    MyText(
-                      text: stat['label'],
-                      size: 12,
-                      weight: FontWeight.w500,
-                      paddingBottom: 6,
-                    ),
-                    MyText(
-                      text: stat['value'],
-                      size: 24,
-                      fontFamily: GoogleFonts.dmSans().fontFamily,
-                      weight: FontWeight.w700,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+                        ],
+                      ),
+                      Spacer(),
+                      MyText(
+                        text: stat['label'],
+                        size: 12,
+                        weight: FontWeight.w500,
+                        paddingBottom: 6,
+                      ),
+                      MyText(
+                        text: stat['value'],
+                        size: 24,
+                        fontFamily: GoogleFonts.dmSans().fontFamily,
+                        weight: FontWeight.w700,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }),
 
           SizedBox(height: 30),
           Row(
@@ -287,64 +345,67 @@ class MerchantHome extends StatelessWidget {
             ],
           ),
           SizedBox(height: 12),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: BouncingScrollPhysics(),
-            padding: AppSizes.ZERO,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              mainAxisExtent: 122,
-            ),
-            itemCount: 2,
-            itemBuilder: (BuildContext context, int index) {
-              final List<Map<String, dynamic>> stats = [
-                {
-                  'icon': Assets.imagesTotalBranches,
-                  'label': 'Total Branches',
-                  'value': '3',
-                },
-                {
-                  'icon': Assets.imagesFeedbackIcon,
-                  'label': 'Total Feedback',
-                  'value': '900',
-                },
-              ];
-              final stat = stats[index];
-              return Container(
-                decoration: BoxDecoration(
-                  color: kFillColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: kBorderColor, width: 1.0),
-                ),
-                padding: EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset(stat['icon'], height: 24, width: 24),
-                      ],
-                    ),
-                    Spacer(),
-                    MyText(
-                      text: stat['label'],
-                      size: 12,
-                      weight: FontWeight.w500,
-                      paddingBottom: 6,
-                    ),
-                    MyText(
-                      text: stat['value'],
-                      size: 24,
-                      fontFamily: GoogleFonts.dmSans().fontFamily,
-                      weight: FontWeight.w700,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+          Obx(() {
+            final List<Map<String, dynamic>> stats = [
+              {
+                'icon': Assets.imagesTotalBranches,
+                'label': 'Total Branches',
+                'value': controller.totalBranches.value.toString(),
+              },
+              {
+                'icon': Assets.imagesFeedbackIcon,
+                'label': 'Total Feedback',
+                'value': controller.totalFeedback.value.toString(),
+              },
+            ];
+
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+              padding: AppSizes.ZERO,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                mainAxisExtent: 122,
+              ),
+              itemCount: 2,
+              itemBuilder: (BuildContext context, int index) {
+                final stat = stats[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    color: kFillColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: kBorderColor, width: 1.0),
+                  ),
+                  padding: EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Image.asset(stat['icon'], height: 24, width: 24),
+                        ],
+                      ),
+                      Spacer(),
+                      MyText(
+                        text: stat['label'],
+                        size: 12,
+                        weight: FontWeight.w500,
+                        paddingBottom: 6,
+                      ),
+                      MyText(
+                        text: stat['value'],
+                        size: 24,
+                        fontFamily: GoogleFonts.dmSans().fontFamily,
+                        weight: FontWeight.w700,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }),
         ],
       ),
     );

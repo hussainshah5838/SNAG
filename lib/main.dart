@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:snag/controller/user_controller.dart';
+import 'package:snag/controllers/user_controller.dart';
+import 'package:snag/controllers/auth_controller.dart';
+import 'package:snag/controllers/industry_controller.dart';
+import 'package:snag/controllers/merchant_onboarding_controller.dart';
+import 'package:snag/controllers/client_onboarding_controller.dart';
 import 'config/routes/routes.dart';
 import 'config/theme/light_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Get.put(UserController());
+  Get.put(AuthController());
+  Get.put(IndustryController());
+  Get.put(MerchantOnboardingController());
+  Get.put(ClientOnboardingController());
   runApp(MyApp());
 }
 

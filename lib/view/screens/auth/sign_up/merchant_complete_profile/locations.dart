@@ -1,10 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
-import 'package:snag/main.dart';
-import 'package:snag/view/widget/common_image_view_widget.dart';
+import 'package:snag/controllers/merchant_onboarding_controller.dart';
 import 'package:snag/view/widget/my_text_widget.dart';
-import 'package:flutter/material.dart';
 
 class Locations extends StatefulWidget {
   @override
@@ -12,96 +12,91 @@ class Locations extends StatefulWidget {
 }
 
 class LocationsState extends State<Locations> {
-  int? _selectedIndex;
+  final _ctrl = MerchantOnboardingController.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    // fetchLocations is called from CompleteProfile when step 4 is reached
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      shrinkWrap: true,
-      padding: AppSizes.DEFAULT,
-      physics: BouncingScrollPhysics(),
-      children: [
-        MyText(
-          text: 'Locations',
-          paddingTop: 8,
-          size: 24,
-          weight: FontWeight.w600,
-          paddingBottom: 8,
-        ),
-        MyText(
-          text:
-              'See your current added locations, enter next or add more branches.',
-          size: 16,
-          lineHeight: 1.5,
-          weight: FontWeight.w500,
-          color: kQuaternaryColor,
-          paddingBottom: 30,
-        ),
-        ListView.builder(
-          padding: AppSizes.ZERO,
-          physics: BouncingScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: 1,
-          itemBuilder: (context, i) {
-            final user = {
-              "name": "Harvest Haven Store",
-              "distance": "Street 123, Riverside Plaza, California",
-            };
-            return GestureDetector(
-              onTap: () => setState(() => _selectedIndex = i),
-              child: _LocationTile(user: user, isSelected: false),
-            );
-          },
-        ),
-      ],
-    );
+    return Obx(() {
+      if (_ctrl.isFetchingLocations.value) {
+        return Center(child: CircularProgressIndicator(color: kSecondaryColor));
+      }
+
+      return ListView(
+        shrinkWrap: true,
+        padding: AppSizes.DEFAULT,
+        physics: BouncingScrollPhysics(),
+        children: [
+          MyText(
+            text: 'Locations',
+            paddingTop: 8,
+            size: 24,
+            weight: FontWeight.w600,
+            paddingBottom: 8,
+          ),
+          MyText(
+            text: 'See your current added locations, enter next or add more branches.',
+            size: 16,
+            lineHeight: 1.5,
+            weight: FontWeight.w500,
+            color: kQuaternaryColor,
+            paddingBottom: 30,
+          ),
+          if (_ctrl.locations.isEmpty)
+            MyText(
+              text: 'No locations added yet.',
+              size: 14,
+              color: kQuaternaryColor,
+              textAlign: TextAlign.center,
+              paddingTop: 40,
+            ),
+          ...(_ctrl.locations.map((loc) => _LocationTile(location: loc))),
+        ],
+      );
+    });
   }
 }
 
 class _LocationTile extends StatelessWidget {
-  const _LocationTile({required this.user, required this.isSelected});
-
-  final Map<String, String> user;
-  final bool isSelected;
+  const _LocationTile({required this.location});
+  final Map<String, dynamic> location;
 
   @override
   Widget build(BuildContext context) {
+    final name    = location['branchAddress'] as String? ?? 'Branch';
+    final address = location['address'] as String? ?? '';
+
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: isSelected ? kLightBlueColor : kFillColor,
-        border: Border.all(
-          color: isSelected ? kSecondaryColor : kBorderColor,
-          width: 1,
-        ),
+        color: kFillColor,
+        border: Border.all(color: kBorderColor, width: 1),
         borderRadius: BorderRadius.circular(50),
       ),
       child: Row(
         children: [
-          CommonImageView(
-            url: dummyImg,
+          Container(
             height: 38,
             width: 38,
-            fit: BoxFit.cover,
-            radius: 100,
+            decoration: BoxDecoration(
+              color: kLightBlueColor,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.location_on, color: kSecondaryColor, size: 20),
           ),
           SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                MyText(
-                  text: user["name"] as String,
-                  size: 16,
-                  weight: FontWeight.w500,
-                  paddingBottom: 4,
-                ),
-                MyText(
-                  text: '${user["distance"]}',
-                  size: 12,
-                  color: kQuaternaryColor,
-                ),
+                MyText(text: name, size: 16, weight: FontWeight.w500, paddingBottom: 4),
+                MyText(text: address, size: 12, color: kQuaternaryColor),
               ],
             ),
           ),

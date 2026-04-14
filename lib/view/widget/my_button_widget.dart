@@ -35,7 +35,15 @@ class MyButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: () {
+            print('🟢 DEBUG: MyButton tapped - "$buttonText"');
+            try {
+              onTap();
+              print('🟢 DEBUG: MyButton onTap executed successfully');
+            } catch (e) {
+              print('🔴 DEBUG: MyButton onTap error: $e');
+            }
+          },
           splashColor: kWhiteColor.withValues(alpha: 0.1),
           highlightColor: kWhiteColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(radius ?? 50),

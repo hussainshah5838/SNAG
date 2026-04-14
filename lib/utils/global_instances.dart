@@ -1,3 +1,3 @@
-import 'package:snag/controller/user_controller.dart';
+import 'package:snag/controllers/user_controller.dart';
 
 UserController chooseUserController = UserController.instance;
