@@ -25,16 +25,20 @@ class _UserNavBarState extends State<UserNavBar> {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> _items = [
       {'icon': Assets.imagesHome, 'label': 'Home'},
-      {'icon': Assets.imagesExplore, 'label': 'Explore'},
-      {'icon': Assets.imagesMeetup, 'label': 'Meetup'},
+      // TODO: Uncomment to enable Explore feature
+      // {'icon': Assets.imagesExplore, 'label': 'Explore'},
+      // TODO: Uncomment to enable Meetup feature
+      // {'icon': Assets.imagesMeetup, 'label': 'Meetup'},
       {'icon': Assets.imagesOffers, 'label': 'My Offers'},
       {'icon': Assets.imagesSettings, 'label': 'Account'},
     ];
 
     final List<Widget> _screens = [
       UserHome(),
-      UScanQr(),
-      UserPlanMeetups(),
+      // TODO: Uncomment to enable Explore feature
+      // UScanQr(),
+      // TODO: Uncomment to enable Meetup feature
+      // UserPlanMeetups(),
       UMyOffers(),
       USettings(),
     ];

@@ -49,9 +49,7 @@ class _UPreferencesState extends State<UPreferences> {
   }
 
   Future<void> _savePreferences() async {
-    print('💾 [Preferences] Saving preferences...');
     if (_selectedInterests.isEmpty) {
-      print('⚠️ [Preferences] No interests selected');
       Get.snackbar(
         'Error',
         'Please select at least one interest',
@@ -60,16 +58,12 @@ class _UPreferencesState extends State<UPreferences> {
       return;
     }
 
-    print('📋 [Preferences] Saving interests: $_selectedInterests');
     final success = await _profileController.updateInterests(
       _selectedInterests.toList(),
     );
 
     if (success) {
-      print('✅ [Preferences] Interests saved successfully');
       Get.back();
-    } else {
-      print('❌ [Preferences] Failed to save interests');
     }
   }
 

@@ -104,7 +104,6 @@ extension on Dio {
               bool refreshSucceeded = false;
               
               try {
-                print('🔄 Attempting to refresh token...');
                 // Use a clean Dio so this interceptor is not triggered again.
                 final refreshDio = Dio(BaseOptions(
                   baseUrl: ApiEndpoints.baseUrl,
@@ -117,7 +116,6 @@ extension on Dio {
                 final newToken =
                     response.data['data']['accessToken'] as String;
                 await ApiClient.saveToken(newToken);
-                print('✅ Token refreshed successfully');
                 refreshSucceeded = true;
 
                 // Retry the original request with the refreshed token.
@@ -129,7 +127,6 @@ extension on Dio {
                   final retryResponse = await fetch(e.requestOptions);
                   return handler.resolve(retryResponse);
                 } catch (retryError) {
-                  print('⚠️ Retry after refresh failed, but token is valid');
                   // Token is valid but retry failed - let the error propagate normally
                   // Don't logout the user
                   final appException = _mapDioError(retryError as DioException);
@@ -143,7 +140,6 @@ extension on Dio {
                   );
                 }
               } catch (refreshError) {
-                print('❌ Token refresh failed: $refreshError');
                 _isRefreshing = false;
                 
                 // Check if it's a network error or auth error
@@ -155,15 +151,12 @@ extension on Dio {
                   
                   if (isNetworkError) {
                     // Network error - don't logout, just let the error propagate
-                    print('⚠️ Token refresh failed due to network error - keeping user logged in');
                     refreshSucceeded = true; // Prevent logout
                   } else if (refreshError.response?.statusCode == 401 || refreshError.response?.statusCode == 403) {
                     // Auth error - refresh token is invalid
-                    print('🔒 Refresh token is invalid or expired');
                     refreshSucceeded = false;
                   } else {
                     // Other error - keep user logged in
-                    print('⚠️ Token refresh failed with non-auth error');
                     refreshSucceeded = true;
                   }
                 } else {
@@ -174,7 +167,6 @@ extension on Dio {
               
               // Only logout if refresh actually failed
               if (!refreshSucceeded) {
-                print('🚪 Logging out due to invalid/expired token');
                 await ApiClient._storage.deleteAll();
                 try {
                   getx.Get.offAll(() => const Login());
@@ -182,7 +174,6 @@ extension on Dio {
               }
             } else {
               // No refresh token available
-              print('🚪 Logging out - no refresh token available');
               await ApiClient._storage.deleteAll();
               try {
                 getx.Get.offAll(() => const Login());

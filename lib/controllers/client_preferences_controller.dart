@@ -15,20 +15,17 @@ class ClientPreferencesController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print('🚀 [ClientPreferencesController] onInit called');
     loadPreferences();
   }
 
   @override
   void onReady() {
     super.onReady();
-    print('✅ [ClientPreferencesController] onReady called');
   }
 
   /// Load user preferences
   Future<void> loadPreferences() async {
     try {
-      print('🔄 Loading preferences...');
       isLoading.value = true;
       errorMsg.value = '';
 
@@ -36,16 +33,13 @@ class ClientPreferencesController extends GetxController {
 
       result
           .onSuccess((data) {
-        print('✅ Preferences loaded: $data');
         preferences.value = data;
       })
           .onFailure((e) {
-        print('❌ Preferences load failed: ${e.message}');
         errorMsg.value = e.message;
       });
     } finally {
       isLoading.value = false;
-      print('✅ Preferences loading complete');
     }
   }
 

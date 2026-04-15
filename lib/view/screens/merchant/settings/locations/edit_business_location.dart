@@ -99,17 +99,6 @@ class _EditBusinessLocationState extends State<EditBusinessLocation> {
   Future<void> _saveLocation() async {
     if (widget.locationId == null) return;
     
-    print('🔵 [EDIT] Saving location...');
-    print('🔵 address: $_address');
-    print('🔵 state: $_state');
-    print('🔵 country: $_country');
-    print('🔵 branchAddress: $_branchAddress');
-    print('🔵 locationType: $_locationType');
-    print('🔵 lat: $_latitude, lng: $_longitude');
-    print('🔵 phoneNumber: $_phoneNumber');
-    print('🔵 email: $_email');
-    print('🔵 bannerFile: ${_bannerFile?.path}');
-    
     setState(() => _isLoading = true);
     
     final result = await _service.editLocation(

@@ -41,8 +41,10 @@ class _USettingsState extends State<USettings> {
     super.initState();
     if (!Get.isRegistered<ClientProfileController>()) {
       _profileController = Get.put(ClientProfileController());
+      _profileController.loadProfile();
     } else {
       _profileController = ClientProfileController.instance;
+      // Only load if profile is null and not currently loading
       if (_profileController.profile.value == null && !_profileController.isLoading.value) {
         _profileController.loadProfile();
       }
@@ -137,19 +139,21 @@ class _USettingsState extends State<USettings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 3,
+                  itemCount: 1, // Changed from 3 to 1 (only Notifications)
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
-                      {
-                        "title": "Shipping Address",
-                        "subtitle": "Manage shipping addresses.",
-                        "image": Assets.imagesYourLocations,
-                      },
-                      {
-                        "title": "Billing & Payments",
-                        "subtitle": "Manage payments and billing.",
-                        "image": Assets.imagesBillingPayments,
-                      },
+                      // TODO: Uncomment to enable Shipping Address
+                      // {
+                      //   "title": "Shipping Address",
+                      //   "subtitle": "Manage shipping addresses.",
+                      //   "image": Assets.imagesYourLocations,
+                      // },
+                      // TODO: Uncomment to enable Billing & Payments
+                      // {
+                      //   "title": "Billing & Payments",
+                      //   "subtitle": "Manage payments and billing.",
+                      //   "image": Assets.imagesBillingPayments,
+                      // },
                       {
                         "title": "Notifications",
                         "image": Assets.imagesNotificationSettings,
@@ -158,13 +162,13 @@ class _USettingsState extends State<USettings> {
                     return GestureDetector(
                       onTap: () {
                         switch (index) {
-                          case 0:
-                            Get.to(() => ShippingAddress());
-                            break;
-                          case 1:
-                            Get.to(() => BillingPayments());
-                            break;
-                          case 2:
+                          // case 0:
+                          //   Get.to(() => ShippingAddress());
+                          //   break;
+                          // case 1:
+                          //   Get.to(() => BillingPayments());
+                          //   break;
+                          case 0: // Changed from case 2
                             Get.to(() => UserNotifications());
                             break;
                         }
@@ -212,7 +216,7 @@ class _USettingsState extends State<USettings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 4,
+                  itemCount: 2, // Changed from 4 to 2 (only Preferences and Snag Scorecard)
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
                       {"title": "Preferences", "image": Assets.imagesSnagScore},
@@ -220,9 +224,10 @@ class _USettingsState extends State<USettings> {
                         "title": "Snag Scorecard",
                         "image": Assets.imagesSnagScore,
                       },
-
-                      {"title": "Share Us", "image": Assets.imagesShareUsIcon},
-                      {"title": "Rate Us", "image": Assets.imagesRateUsIcon},
+                      // TODO: Uncomment to enable Share Us
+                      // {"title": "Share Us", "image": Assets.imagesShareUsIcon},
+                      // TODO: Uncomment to enable Rate Us
+                      // {"title": "Rate Us", "image": Assets.imagesRateUsIcon},
                     ];
                     return GestureDetector(
                       onTap: () {
@@ -233,12 +238,12 @@ class _USettingsState extends State<USettings> {
                           case 1:
                             Get.to(() => USnagScore());
                             break;
-                          case 2:
-                            Get.dialog(_shareAppDialog());
-                            break;
-                          case 3:
-                            Get.dialog(_feedbackDialog());
-                            break;
+                          // case 2:
+                          //   Get.dialog(_shareAppDialog());
+                          //   break;
+                          // case 3:
+                          //   Get.dialog(_feedbackDialog());
+                          //   break;
                         }
                       },
                       child: Container(
@@ -284,7 +289,7 @@ class _USettingsState extends State<USettings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 4,
+                  itemCount: 3, // Changed from 4 to 3 (removed Support)
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
                       {
@@ -292,7 +297,8 @@ class _USettingsState extends State<USettings> {
                         "subtitle": "Get help",
                         "image": Assets.imagesHelpAndFaq,
                       },
-                      {"title": "Support", "image": Assets.imagesSupport},
+                      // TODO: Uncomment to enable Support
+                      // {"title": "Support", "image": Assets.imagesSupport},
                       {"title": "Delete Account", "image": Assets.imagesDeleteAccount},
                       {"title": "Log out", "image": Assets.imagesLogoutIcon},
                     ];
@@ -302,13 +308,13 @@ class _USettingsState extends State<USettings> {
                           case 0:
                             Get.to(() => Faq());
                             break;
-                          case 1:
-                            Get.to(() => UContactSupport());
-                            break;
-                          case 2:
+                          // case 1:
+                          //   Get.to(() => UContactSupport());
+                          //   break;
+                          case 1: // Changed from case 2
                             Get.dialog(_deleteAccountDialog());
                             break;
-                          case 3:
+                          case 2: // Changed from case 3
                             Get.dialog(_logoutDialog());
                             break;
                         }

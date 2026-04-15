@@ -26,10 +26,10 @@ class NotificationController extends GetxController {
     // Setup socket listeners
     _socketService.onNotificationReceived = _handleNewNotification;
     _socketService.onConnected = () {
-      print('✅ Socket connected in NotificationController');
+      // Socket connected
     };
     _socketService.onDisconnected = () {
-      print('❌ Socket disconnected in NotificationController');
+      // Socket disconnected
     };
     
     // Connect socket if not already connected
@@ -67,10 +67,8 @@ class NotificationController extends GetxController {
         notification.message,
         duration: Duration(seconds: 3),
       );
-      
-      print('🔔 New notification added to list: ${notification.title}');
     } catch (e) {
-      print('❌ Error parsing notification: $e');
+      // Error parsing notification
     }
   }
 
@@ -112,7 +110,6 @@ class NotificationController extends GetxController {
           })
           .onFailure((err) {
             error.value = err.message;
-            print('❌ Error fetching notifications: ${err.message}');
           });
     } finally {
       isLoading.value = false;

@@ -16,20 +16,17 @@ class ClientProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print('🚀 [ClientProfileController] onInit called');
     loadProfile();
   }
 
   @override
   void onReady() {
     super.onReady();
-    print('✅ [ClientProfileController] onReady called');
   }
 
   /// Load user profile
   Future<void> loadProfile() async {
     try {
-      print('🔄 Loading profile...');
       isLoading.value = true;
       errorMsg.value = '';
 
@@ -37,14 +34,9 @@ class ClientProfileController extends GetxController {
 
       result
           .onSuccess((data) {
-        print('✅ Profile loaded: ${data.firstName} ${data.lastName}, ${data.email}');
-        print('📧 Email: ${data.email}');
-        print('🖼️ Avatar: ${data.avatarUrl}');
-        print('🎯 Interests: ${data.interests}');
         profile.value = data;
       })
           .onFailure((e) {
-        print('❌ Profile load failed: ${e.message}');
         errorMsg.value = e.message;
       });
     } finally {
@@ -121,21 +113,18 @@ class ClientProfileController extends GetxController {
     final name = profile.value != null
         ? '${profile.value!.firstName ?? ''} ${profile.value!.lastName ?? ''}'.trim()
         : '';
-    print('👤 Full name getter: "$name"');
     return name;
   }
 
   /// Get email
   String get email {
     final emailValue = profile.value?.email ?? '';
-    print('📧 Email getter: "$emailValue"');
     return emailValue;
   }
 
   /// Get avatar URL
   String? get avatarUrl {
     final url = profile.value?.avatarUrl;
-    print('🖼️ Avatar URL getter: "$url"');
     return url;
   }
 

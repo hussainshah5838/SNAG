@@ -3,6 +3,7 @@ import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
 import 'package:snag/main.dart';
+import 'package:snag/models/offer_model.dart';
 import 'package:snag/view/screens/user/user_my_offers/u_offer_details.dart';
 import 'package:snag/view/widget/common_image_view_widget.dart';
 import 'package:snag/view/widget/custom_app_bar_widget.dart';
@@ -17,11 +18,15 @@ import 'package:flutter/material.dart';
 class URestaurantOffersDiscount extends StatefulWidget {
   final String image;
   final String title;
+  final String merchantId;
+  final List<OfferModel> offers;
 
   const URestaurantOffersDiscount({
     super.key,
     required this.image,
     required this.title,
+    required this.merchantId,
+    required this.offers,
   });
   @override
   State<URestaurantOffersDiscount> createState() =>
@@ -30,72 +35,70 @@ class URestaurantOffersDiscount extends StatefulWidget {
 
 class _URestaurantOffersDiscountState extends State<URestaurantOffersDiscount> {
   int? selectedLabelIndex = 0;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> offerList = [
-      {
-        "image": Assets.imagesMc,
-        "title": "Weekend Flash Discount",
-        "deals": "Downtown Outlet - Instore",
-      },
-      {
-        "image": Assets.imagesRalph,
-        "title": "Purchase Three Coffees",
-        "deals": "Java Junction - Instore",
-      },
-      {
-        "image": Assets.imagesSiemens,
-        "title": "Buy 1 Get 1 Free Coffee",
-        "deals": "Friends Market - Instore",
-      },
-      {
-        "image": Assets.imagesMark,
-        "title": "Happy Hour",
-        "deals": "California Market - Online",
-      },
-      {
-        "image": Assets.imagesKfc,
-        "title": "Coffee Free!",
-        "deals": "Buddy's Bazaar - Online",
-      },
-      {
-        "image": Assets.imagesTarget,
-        "title": "New Customer Special",
-        "deals": "Downtown Outlet - Online",
-      },
-      {
-        "image": Assets.imagesBurgerKing,
-        "title": "Purchase One Coffee",
-        "deals": "Buddy's Bazaar - Online",
-      },
-    ];
     final List<String> labels = ['All', 'In-Store', 'Online'];
+    
+    // Filter offers based on selected tab
+    var filteredOffers = widget.offers;
+    if (selectedLabelIndex == 1) {
+      filteredOffers = widget.offers.where((o) => o.offerType == 'in-store').toList();
+    } else if (selectedLabelIndex == 2) {
+      filteredOffers = widget.offers.where((o) => o.offerType == 'online').toList();
+    }
+    
+    // Filter by search query
+    if (_searchQuery.isNotEmpty) {
+      filteredOffers = filteredOffers.where((offer) {
+        final titleMatch = offer.title.toLowerCase().contains(_searchQuery);
+        final locationMatch = offer.locations.any((loc) => 
+          loc.address?.toLowerCase().contains(_searchQuery) ?? false
+        );
+        return titleMatch || locationMatch;
+      }).toList();
+    }
+    
     return Scaffold(
       appBar: simpleAppBar(
         title: '',
         haveLeading: true,
         titleWidget: MyTextField(
+          controller: _searchController,
           labelText: 'Location',
           hintText: 'Search city, area, or branch name...',
+          onChanged: (value) {
+            setState(() {
+              _searchQuery = value.toLowerCase();
+            });
+          },
           prefix: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [Image.asset(Assets.imagesSearchIcon, height: 22)],
           ),
-          suffix: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Get.bottomSheet(
-                    _FilterBottomSheet(),
-                    isScrollControlled: true,
-                  );
-                },
-                child: Image.asset(Assets.imagesFilter, height: 22),
-              ),
-            ],
-          ),
+          // TODO: Uncomment to enable filter
+          // suffix: Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     GestureDetector(
+          //       onTap: () {
+          //         Get.bottomSheet(
+          //           _FilterBottomSheet(),
+          //           isScrollControlled: true,
+          //         );
+          //       },
+          //       child: Image.asset(Assets.imagesFilter, height: 22),
+          //     ),
+          //   ],
+          // ),
         ),
         actions: [SizedBox(width: 20)],
       ),
@@ -153,7 +156,7 @@ class _URestaurantOffersDiscountState extends State<URestaurantOffersDiscount> {
                   width: 34,
                   radius: 100,
                   fit: BoxFit.cover,
-                  imagePath: widget.image,
+                  url: widget.image,
                 ),
                 Expanded(
                   child: MyText(
@@ -174,20 +177,46 @@ class _URestaurantOffersDiscountState extends State<URestaurantOffersDiscount> {
             ),
           ),
           SizedBox(height: 14),
-          ListView.builder(
-            padding: AppSizes.DEFAULT,
-            physics: BouncingScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: offerList.length,
-            itemBuilder: (context, i) {
-              return GestureDetector(
-                onTap: () {
-                  Get.to(() => UOfferDetails());
-                },
-                child: _OfferTile(user: offerList[i], isSelected: false),
-              );
-            },
-          ),
+          
+          if (filteredOffers.isEmpty)
+            Padding(
+              padding: AppSizes.DEFAULT,
+              child: Center(
+                child: MyText(
+                  text: 'No offers found',
+                  size: 14,
+                  color: kQuaternaryColor,
+                ),
+              ),
+            )
+          else
+            ListView.builder(
+              padding: AppSizes.DEFAULT,
+              physics: BouncingScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: filteredOffers.length,
+              itemBuilder: (context, i) {
+                final offer = filteredOffers[i];
+                final locationText = offer.locations.isNotEmpty
+                    ? '${offer.locations.first.address ?? 'Location'} - ${offer.offerType}'
+                    : offer.offerType;
+                    
+                return GestureDetector(
+                  onTap: () {
+                    Get.bottomSheet(
+                      UOfferDetails(offer: offer),
+                      isScrollControlled: true,
+                    );
+                  },
+                  child: _OfferTile(
+                    image: widget.image,
+                    title: offer.title,
+                    subtitle: locationText,
+                    isSelected: false,
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );
@@ -195,9 +224,16 @@ class _URestaurantOffersDiscountState extends State<URestaurantOffersDiscount> {
 }
 
 class _OfferTile extends StatelessWidget {
-  const _OfferTile({required this.user, required this.isSelected});
+  const _OfferTile({
+    required this.image,
+    required this.title,
+    required this.subtitle,
+    required this.isSelected,
+  });
 
-  final Map<String, String> user;
+  final String image;
+  final String title;
+  final String subtitle;
   final bool isSelected;
 
   @override
@@ -216,7 +252,7 @@ class _OfferTile extends StatelessWidget {
       child: Row(
         children: [
           CommonImageView(
-            url: dummyImg,
+            url: image,
             height: 38,
             width: 38,
             fit: BoxFit.cover,
@@ -228,13 +264,13 @@ class _OfferTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 MyText(
-                  text: user["title"] as String,
+                  text: title,
                   size: 15,
                   weight: FontWeight.w600,
                   paddingBottom: 4,
                 ),
                 MyText(
-                  text: '${user["deals"]}',
+                  text: subtitle,
                   size: 12,
                   color: kQuaternaryColor,
                 ),
