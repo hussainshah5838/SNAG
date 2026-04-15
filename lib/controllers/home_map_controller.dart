@@ -94,9 +94,7 @@ class HomeMapController extends GetxController {
           offers.value = data;
           _buildMarkers();
         })
-        .onFailure((e) {
-          // Error loading offers
-        });
+        .onFailure((e) => print('❌ [HomeMap] ${e.message}'));
 
     isLoading.value = false;
   }

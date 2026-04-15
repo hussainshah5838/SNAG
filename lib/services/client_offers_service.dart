@@ -39,6 +39,7 @@ class ClientOffersService {
     String? endDate,
   }) async {
     try {
+      print('🌐 [Service] Making API call to discover offers...');
       final queryParams = <String, dynamic>{};
       if (lat != null) queryParams['lat'] = lat;
       if (lng != null) queryParams['lng'] = lng;
@@ -55,12 +56,19 @@ class ClientOffersService {
         query: queryParams,
       );
 
+      print('✅ [Service] Got response: ${res.statusCode}');
+      print('📦 [Service] Response data type: ${res.data.runtimeType}');
+      print('📦 [Service] Response data: ${res.data}');
+
       final offers = (res.data['data'] as List<dynamic>)
           .map((json) => OfferModel.fromJson(json as Map<String, dynamic>))
           .toList();
 
+      print('✅ [Service] Parsed ${offers.length} offers');
       return Result.success(offers);
     } catch (e, stackTrace) {
+      print('❌ [Service] Error: $e');
+      print('📍 [Service] Stack trace: $stackTrace');
       return Result.failure(_handleError(e));
     }
   }

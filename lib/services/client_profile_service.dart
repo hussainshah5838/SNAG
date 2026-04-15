@@ -18,12 +18,18 @@ class ClientProfileService {
 
   Future<Result<ProfileModel>> getProfile() async {
     try {
+      print('🌐 [ProfileService] Calling GET ${ApiEndpoints.clientProfile}');
       final res = await _client.get(ApiEndpoints.clientProfile);
+      print('✅ [ProfileService] Response received: ${res.statusCode}');
+      print('📦 [ProfileService] Response data: ${res.data}');
       final profile = ProfileModel.fromJson(res.data['data'] as Map<String, dynamic>);
+      print('✅ [ProfileService] Profile parsed: ${profile.email}');
       return Result.success(profile);
     } on AppException catch (e) {
+      print('❌ [ProfileService] Error: ${e.message}');
       return Result.failure(e);
     } catch (e) {
+      print('❌ [ProfileService] Unexpected error: $e');
       return Result.failure(const NetworkException());
     }
   }

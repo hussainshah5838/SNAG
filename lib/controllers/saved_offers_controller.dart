@@ -21,12 +21,16 @@ class SavedOffersController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    print('🚀 [SavedOffersController] onInit called');
     loadSavedOffers();
   }
 
   /// Load saved offers with current filters
   Future<void> loadSavedOffers() async {
     try {
+      print('🔄 [SavedOffers] Loading saved offers...');
+      print('📋 [SavedOffers] Filters - category: ${selectedCategory.value}, keyword: ${searchKeyword.value}, type: ${selectedOfferType.value}');
+      
       isLoading.value = true;
       errorMsg.value = '';
 
@@ -39,9 +43,11 @@ class SavedOffersController extends GetxController {
 
       result
           .onSuccess((data) {
+        print('✅ [SavedOffers] Loaded ${data.length} saved offers');
         savedOffers.value = data;
       })
           .onFailure((e) {
+        print('❌ [SavedOffers] Load failed: ${e.message}');
         errorMsg.value = e.message;
       });
     } finally {
@@ -51,9 +57,11 @@ class SavedOffersController extends GetxController {
 
   /// Set category filter and reload
   void setCategory(String? category) {
+    print('🏷️ [SavedOffers] Setting category: $category');
     // If same category is clicked, unselect it
     if (selectedCategory.value == category) {
       selectedCategory.value = null;
+      print('🔄 [SavedOffers] Category unselected, showing all');
     } else {
       selectedCategory.value = category;
     }
@@ -62,24 +70,28 @@ class SavedOffersController extends GetxController {
 
   /// Set search keyword and reload
   void setSearchKeyword(String keyword) {
+    print('🔍 [SavedOffers] Setting search keyword: $keyword');
     searchKeyword.value = keyword;
     loadSavedOffers();
   }
 
   /// Set offer type filter and reload
   void setOfferType(String? type) {
+    print('📍 [SavedOffers] Setting offer type: $type');
     selectedOfferType.value = type;
     loadSavedOffers();
   }
 
   /// Set brand filter and reload
   void setBrand(String? brand) {
+    print('🏪 [SavedOffers] Setting brand: $brand');
     selectedBrand.value = brand;
     loadSavedOffers();
   }
 
   /// Clear all filters
   void clearFilters() {
+    print('🧹 [SavedOffers] Clearing all filters');
     selectedCategory.value = null;
     searchKeyword.value = '';
     selectedOfferType.value = null;
@@ -90,12 +102,14 @@ class SavedOffersController extends GetxController {
   /// Unsave an offer
   Future<bool> unsaveOffer(String offerId) async {
     try {
+      print('🗑️ [SavedOffers] Unsaving offer: $offerId');
       isLoading.value = true;
 
       final result = await _service.unsaveOffer(offerId);
 
       result
           .onSuccess((_) {
+        print('✅ [SavedOffers] Offer unsaved successfully');
         // Remove from local list
         savedOffers.removeWhere((offer) => offer.id == offerId);
         Get.snackbar(
@@ -105,6 +119,7 @@ class SavedOffersController extends GetxController {
         );
       })
           .onFailure((e) {
+        print('❌ [SavedOffers] Unsave failed: ${e.message}');
         Get.snackbar(
           'Error',
           e.message,

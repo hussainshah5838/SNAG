@@ -51,6 +51,14 @@ class MerchantProfileController extends GetxController {
     File? logoFile,
     String? role,
   }) async {
+    print('🔵 [PROFILE CONTROLLER] updateBranchProfile called');
+    print('🔵 branchName: $branchName');
+    print('🔵 phoneNumber: $phoneNumber');
+    print('🔵 branchAddress: $branchAddress');
+    print('🔵 industry: $industry');
+    print('🔵 subCategories: $subCategories');
+    print('🔵 role: $role');
+    
     errorMsg.value = '';
     isLoading.value = true;
     
@@ -66,16 +74,19 @@ class MerchantProfileController extends GetxController {
       );
 
       if (result.isSuccess) {
+        print('✅ [PROFILE CONTROLLER] Update successful');
         // Refresh profile data after successful update
         await fetchBranchProfile();
         return true;
       } else {
         result.onFailure((e) {
+          print('❌ [PROFILE CONTROLLER] Update failed: ${e.message}');
           errorMsg.value = e.message;
         });
         return false;
       }
     } catch (e) {
+      print('❌ [PROFILE CONTROLLER] Exception: $e');
       errorMsg.value = e.toString();
       return false;
     } finally {

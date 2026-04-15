@@ -96,6 +96,7 @@ class EditOfferController extends GetxController {
           })
           .onFailure((err) {
             error.value = err.message;
+            print('❌ Error loading offer: ${err.message}');
           });
     } finally {
       isLoading.value = false;
@@ -143,6 +144,11 @@ class EditOfferController extends GetxController {
     
     // Location Info - REQUIRED
     if (locationIds.isEmpty) missing.add('At least one Location');
+
+    print('🔍 Validation check:');
+    print('  Missing fields: $missing');
+    print('  Has QR: $hasQR, Has Barcode: $hasBarcode');
+    print('  Has Coupon: $hasCoupon, Has URL: $hasUrl');
 
     if (missing.isEmpty) return null;
     return 'Cannot publish. Missing required fields:\n• ${missing.join('\n• ')}';
@@ -208,6 +214,7 @@ class EditOfferController extends GetxController {
           .onFailure((err) {
             error.value = err.message;
             Get.snackbar('Error', err.message);
+            print('❌ Error saving offer: ${err.message}');
           });
 
       return success;
@@ -231,10 +238,12 @@ class EditOfferController extends GetxController {
           })
           .onFailure((err) {
             Get.snackbar('Error', err.message);
+            print('❌ Error deleting offer: ${err.message}');
           });
 
       return success;
     } catch (e) {
+      print('❌ Error deleting offer: $e');
       return false;
     }
   }

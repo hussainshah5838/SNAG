@@ -29,10 +29,12 @@ class _UMyOffersState extends State<UMyOffers> {
   @override
   void initState() {
     super.initState();
+    print('🚀 [MyOffers] initState called');
     
     _searchController = TextEditingController();
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('🎯 [MyOffers] Getting controllers...');
       _controller = Get.put(SavedOffersController());
       _industryController = IndustryController.instance;
       setState(() {});
@@ -46,14 +48,17 @@ class _UMyOffersState extends State<UMyOffers> {
   }
 
   void _onSearchChanged(String value) {
+    print('🔍 [MyOffers] Search changed: $value');
     _controller?.setSearchKeyword(value);
   }
 
   void _onCategoryTap(String? category) {
+    print('🏷️ [MyOffers] Category tapped: $category');
     _controller?.setCategory(category);
   }
 
   Future<void> _onRefresh() async {
+    print('🔄 [MyOffers] Pull to refresh');
     await _controller?.refresh();
   }
 
@@ -262,6 +267,7 @@ class _UMyOffersState extends State<UMyOffers> {
                   final offer = _controller!.filteredOffers[i];
                   return GestureDetector(
                     onTap: () {
+                      print('🎯 [MyOffers] Navigating to offer: ${offer.id}');
                       Get.to(() => UOfferDetails(offer: offer));
                     },
                     child: _OfferTile(

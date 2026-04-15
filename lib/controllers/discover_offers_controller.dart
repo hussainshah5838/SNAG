@@ -21,6 +21,7 @@ class DiscoverOffersController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    print('🚀 [DiscoverOffers] onInit called');
     // Don't load on init - wait for location or just load all
     loadOffersWithoutLocation();
   }
@@ -28,6 +29,9 @@ class DiscoverOffersController extends GetxController {
   /// Load all offers without location filter
   Future<void> loadOffersWithoutLocation() async {
     try {
+      print('🔄 [DiscoverOffers] Loading ALL offers (no location filter)...');
+      print('📋 [DiscoverOffers] Filters - category: ${selectedCategory.value}');
+      
       isLoading.value = true;
       errorMsg.value = '';
 
@@ -37,9 +41,11 @@ class DiscoverOffersController extends GetxController {
 
       result
           .onSuccess((data) {
+        print('✅ [DiscoverOffers] Loaded ${data.length} offers');
         offers.value = data;
       })
           .onFailure((e) {
+        print('❌ [DiscoverOffers] Load failed: ${e.message}');
         errorMsg.value = e.message;
       });
     } finally {
@@ -50,6 +56,9 @@ class DiscoverOffersController extends GetxController {
   /// Load offers with current filters
   Future<void> loadOffers() async {
     try {
+      print('🔄 [DiscoverOffers] Loading offers...');
+      print('📋 [DiscoverOffers] Filters - category: ${selectedCategory.value}, lat: ${userLat.value}, lng: ${userLng.value}');
+      
       isLoading.value = true;
       errorMsg.value = '';
 
@@ -62,9 +71,11 @@ class DiscoverOffersController extends GetxController {
 
       result
           .onSuccess((data) {
+        print('✅ [DiscoverOffers] Loaded ${data.length} offers');
         offers.value = data;
       })
           .onFailure((e) {
+        print('❌ [DiscoverOffers] Load failed: ${e.message}');
         errorMsg.value = e.message;
       });
     } finally {
@@ -74,8 +85,10 @@ class DiscoverOffersController extends GetxController {
 
   /// Set category filter and reload
   void setCategory(String? category) {
+    print('🏷️ [DiscoverOffers] Setting category: $category');
     if (selectedCategory.value == category) {
       selectedCategory.value = null;
+      print('🔄 [DiscoverOffers] Category unselected, showing all');
     } else {
       selectedCategory.value = category;
     }
@@ -84,6 +97,7 @@ class DiscoverOffersController extends GetxController {
 
   /// Set user location and reload
   void setLocation(double lat, double lng) {
+    print('📍 [DiscoverOffers] Setting location: $lat, $lng');
     userLat.value = lat;
     userLng.value = lng;
     loadOffers();

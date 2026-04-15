@@ -99,6 +99,7 @@ class AuthController extends GetxController {
         }
       }
     } catch (e) {
+      print('❌ Error restoring auth: $e');
       await _clearStoredAuth();
     } finally {
       isLoading.value = false;
@@ -139,6 +140,8 @@ class AuthController extends GetxController {
       // Save tokens (ApiClient also saves accessToken, but we save both here)
       await _storage.write(key: _accessTokenKey, value: accessToken);
       await _storage.write(key: _refreshTokenKey, value: refreshToken);
+      
+      print('✅ Auth data saved to secure storage');
     } catch (e) {
       print('❌ Error saving auth data: $e');
     }
@@ -151,6 +154,7 @@ class AuthController extends GetxController {
       await _storage.delete(key: _accessTokenKey);
       await _storage.delete(key: _refreshTokenKey);
       await ApiClient.clearToken();
+      print('✅ Auth data cleared from secure storage');
     } catch (e) {
       print('❌ Error clearing auth data: $e');
     }
@@ -328,6 +332,7 @@ class AuthController extends GetxController {
         // Initialize Socket.IO connection for real-time notifications
         try {
           await SocketService.instance.connect();
+          print('✅ Socket.IO initialized after login');
         } catch (e) {
           print('⚠️ Failed to initialize Socket.IO: $e');
           // Don't fail login if socket connection fails
@@ -402,6 +407,7 @@ class AuthController extends GetxController {
       // Disconnect Socket.IO
       try {
         SocketService.instance.disconnect();
+        print('✅ Socket.IO disconnected on logout');
       } catch (e) {
         print('⚠️ Failed to disconnect Socket.IO: $e');
       }
@@ -416,6 +422,8 @@ class AuthController extends GetxController {
       
       // Navigate to login
       Get.offAll(() => const Login());
+      
+      print('✅ Logged out successfully');
     } catch (e) {
       print('❌ Error during logout: $e');
       // Still clear local data even if backend call fails

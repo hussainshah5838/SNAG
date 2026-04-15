@@ -27,11 +27,13 @@ class _USavedOffersState extends State<USavedOffers> {
   @override
   void initState() {
     super.initState();
+    print('🚀 [SavedOffers] initState called');
     
     _searchController = TextEditingController();
     
     // Initialize controllers after frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('🎯 [SavedOffers] Getting controllers...');
       _controller = Get.put(SavedOffersController());
       _industryController = IndustryController.instance;
       setState(() {});
@@ -45,14 +47,17 @@ class _USavedOffersState extends State<USavedOffers> {
   }
 
   void _onSearchChanged(String value) {
+    print('🔍 [SavedOffers] Search changed: $value');
     _controller?.setSearchKeyword(value);
   }
 
   void _onCategoryTap(String? category) {
+    print('🏷️ [SavedOffers] Category tapped: $category');
     _controller?.setCategory(category);
   }
 
   Future<void> _onRefresh() async {
+    print('🔄 [SavedOffers] Pull to refresh');
     await _controller?.refresh();
   }
 
@@ -262,6 +267,7 @@ class _USavedOffersState extends State<USavedOffers> {
                     final offer = _controller!.filteredOffers[i];
                     return GestureDetector(
                       onTap: () {
+                        print('🎯 [SavedOffers] Navigating to offer: ${offer.id}');
                         Get.to(() => OfferDetails(), arguments: {'offerId': offer.id});
                       },
                       child: _OfferTile(

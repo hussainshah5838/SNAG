@@ -14,12 +14,18 @@ class PreferencesService {
   /// Get user preferences
   Future<Result<PreferencesModel>> getPreferences() async {
     try {
+      print('🌐 [PreferencesService] Calling GET ${ApiEndpoints.clientPreferences}');
       final response = await _client.get(ApiEndpoints.clientPreferences);
+      print('✅ [PreferencesService] Response received: ${response.statusCode}');
+      print('📦 [PreferencesService] Response data: ${response.data}');
       final preferences = PreferencesModel.fromJson(response.data['data']);
+      print('✅ [PreferencesService] Preferences parsed');
       return Result.success(preferences);
     } on AppException catch (e) {
+      print('❌ [PreferencesService] Error: ${e.message}');
       return Result.failure(e);
     } catch (e) {
+      print('❌ [PreferencesService] Unexpected error: $e');
       return Result.failure(const NetworkException());
     }
   }

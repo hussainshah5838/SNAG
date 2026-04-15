@@ -23,6 +23,7 @@ class SocketService {
   /// Initialize and connect to Socket.IO server
   Future<void> connect() async {
     if (_socket != null && _isConnected) {
+      print('🔌 Socket already connected');
       return;
     }
 
@@ -30,11 +31,14 @@ class SocketService {
       // Get access token from secure storage
       final token = await _storage.read(key: StorageKeys.accessToken);
       if (token == null) {
+        print('❌ No access token found, cannot connect to socket');
         return;
       }
 
       // Get base URL from ApiEndpoints
       final baseUrl = ApiEndpoints.baseUrl;
+      
+      print('🔌 Connecting to Socket.IO at $baseUrl');
 
       _socket = IO.io(
         baseUrl,
@@ -50,24 +54,27 @@ class SocketService {
 
       _socket!.onConnect((_) {
         _isConnected = true;
+        print('✅ Socket.IO connected');
         onConnected?.call();
       });
 
       _socket!.onDisconnect((_) {
         _isConnected = false;
+        print('❌ Socket.IO disconnected');
         onDisconnected?.call();
       });
 
       _socket!.onConnectError((error) {
-        // Connection error
+        print('❌ Socket.IO connection error: $error');
       });
 
       _socket!.onError((error) {
-        // Socket error
+        print('❌ Socket.IO error: $error');
       });
 
       // Listen for notifications
       _socket!.on('notification', (data) {
+        print('🔔 Notification received: $data');
         if (data is Map<String, dynamic>) {
           onNotificationReceived?.call(data);
         }
@@ -75,18 +82,19 @@ class SocketService {
 
       // Ping/pong for connection health
       _socket!.on('pong', (_) {
-        // Pong received
+        print('🏓 Pong received');
       });
 
       _socket!.connect();
     } catch (e) {
-      // Error connecting to Socket.IO
+      print('❌ Error connecting to Socket.IO: $e');
     }
   }
 
   /// Disconnect from Socket.IO server
   void disconnect() {
     if (_socket != null) {
+      print('🔌 Disconnecting from Socket.IO');
       _socket!.disconnect();
       _socket!.dispose();
       _socket = null;

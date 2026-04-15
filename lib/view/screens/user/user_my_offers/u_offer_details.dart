@@ -45,12 +45,15 @@ class _UOfferDetailsState extends State<UOfferDetails> {
     setState(() => _isSaving = true);
 
     try {
+      print('💾 [OfferDetails] Toggling save for offer: ${widget.offer!.id}');
+      
       final result = _isSaved
           ? await _offersService.unsaveOffer(widget.offer!.id)
           : await _offersService.saveOffer(widget.offer!.id);
 
       result
           .onSuccess((saved) {
+        print('✅ [OfferDetails] Save toggled successfully: $saved');
         setState(() => _isSaved = saved);
         Get.snackbar(
           saved ? 'Saved' : 'Removed',
@@ -62,6 +65,7 @@ class _UOfferDetailsState extends State<UOfferDetails> {
         );
       })
           .onFailure((error) {
+        print('❌ [OfferDetails] Save toggle failed: ${error.message}');
         Get.snackbar(
           'Error',
           error.message,
@@ -81,15 +85,19 @@ class _UOfferDetailsState extends State<UOfferDetails> {
     setState(() => _isSnagging = true);
 
     try {
+      print('🎯 [OfferDetails] Snagging offer: ${widget.offer!.id}');
+      
       final result = await _offersService.snagOffer(widget.offer!.id);
 
       result
           .onSuccess((redemption) {
+        print('✅ [OfferDetails] Offer snagged successfully');
         setState(() => _hasRedeemed = true); // Update state
         Get.back(); // Close confirmation dialog
         Get.off(() => UOfferRedeemed(redemption: redemption)); // Replace current screen
       })
           .onFailure((error) {
+        print('❌ [OfferDetails] Snag failed: ${error.message}');
         Get.back(); // Close confirmation dialog
         Get.snackbar(
           'Cannot Snag Offer',

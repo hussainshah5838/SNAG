@@ -2,9 +2,6 @@ import 'package:get/get.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
-import 'package:snag/controllers/discover_offers_controller.dart';
-import 'package:snag/controllers/industry_controller.dart';
-import 'package:snag/main.dart';
 import 'package:snag/view/screens/user/user_home/u_restaurant_offers_discount.dart';
 import 'package:snag/view/widget/common_image_view_widget.dart';
 import 'package:snag/view/widget/custom_app_bar_widget.dart';
@@ -22,226 +19,140 @@ class UserSearch extends StatefulWidget {
 }
 
 class _UserSearchState extends State<UserSearch> {
-  int? selectedLabelIndex;
-  late final DiscoverOffersController _offersController;
-  late final IndustryController _industryController;
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
-
-  @override
-  void initState() {
-    super.initState();
-    
-    // Check if controller already exists, otherwise create it
-    if (Get.isRegistered<DiscoverOffersController>()) {
-      _offersController = DiscoverOffersController.instance;
-    } else {
-      _offersController = Get.put(DiscoverOffersController());
-    }
-    
-    // Check if industry controller exists, otherwise create it
-    if (Get.isRegistered<IndustryController>()) {
-      _industryController = IndustryController.instance;
-    } else {
-      _industryController = Get.put(IndustryController());
-    }
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
+  int? selectedLabelIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, String>> offerList = [
+      {"image": Assets.imagesMc, "title": "McDonald's", "deals": "2 Deals"},
+      {
+        "image": Assets.imagesRalph,
+        "title": "Ralph Lauren ",
+        "deals": "1 Deals",
+      },
+      {"image": Assets.imagesSiemens, "title": "Siemens", "deals": "3 Deals"},
+      {
+        "image": Assets.imagesMark,
+        "title": "Marks & Spencer",
+        "deals": "4 Deals",
+      },
+      {"image": Assets.imagesKfc, "title": "KFC", "deals": "5 Deals"},
+      {"image": Assets.imagesTarget, "title": "Target", "deals": "2 Deals"},
+      {
+        "image": Assets.imagesBurgerKing,
+        "title": "Burger King",
+        "deals": "6 Deals",
+      },
+    ];
+    final List<String> labels = [
+      'Food & Drinks',
+      'Health',
+      'Shopping',
+      'Services',
+      'Beauty',
+    ];
     return Scaffold(
       appBar: simpleAppBar(
         title: '',
         haveLeading: true,
         titleWidget: MyTextField(
-          controller: _searchController,
           labelText: 'Location',
           hintText: 'Search city, area, or branch name...',
-          onChanged: (value) {
-            setState(() {
-              _searchQuery = value.toLowerCase();
-            });
-          },
           prefix: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [Image.asset(Assets.imagesSearchIcon, height: 22)],
           ),
-          // TODO: Uncomment to enable filter
-          // suffix: Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     GestureDetector(
-          //       onTap: () {
-          //         Get.bottomSheet(
-          //           _FilterBottomSheet(),
-          //           isScrollControlled: true,
-          //         );
-          //       },
-          //       child: Image.asset(Assets.imagesFilter, height: 22),
-          //     ),
-          //   ],
-          // ),
+          suffix: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Get.bottomSheet(
+                    _FilterBottomSheet(),
+                    isScrollControlled: true,
+                  );
+                },
+                child: Image.asset(Assets.imagesFilter, height: 22),
+              ),
+            ],
+          ),
         ),
         actions: [SizedBox(width: 20)],
       ),
-      body: Obx(() {
-        if (_offersController.isLoading.value) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        // Get industries for category tabs
-        final industries = _industryController.industries;
-        
-        // Group offers by merchant
-        final merchantsMap = _offersController.offersByMerchant;
-        
-        // Filter by selected category if any
-        var filteredMerchants = selectedLabelIndex == null
-            ? merchantsMap
-            : Map.fromEntries(
-                merchantsMap.entries.where((entry) {
-                  final selectedIndustry = industries[selectedLabelIndex!];
-                  return entry.value.any((offer) => offer.category == selectedIndustry);
-                }),
-              );
-
-        // Filter by search query
-        if (_searchQuery.isNotEmpty) {
-          filteredMerchants = Map.fromEntries(
-            filteredMerchants.entries.where((entry) {
-              final offers = entry.value;
-              final merchantName = offers.first.merchantBrand?.toLowerCase() ?? '';
-              
-              // Search in merchant name or offer locations
-              return merchantName.contains(_searchQuery) ||
-                  offers.any((offer) => 
-                    offer.locations.any((loc) => 
-                      loc.address?.toLowerCase().contains(_searchQuery) ?? false
-                    )
-                  );
-            }),
-          );
-        }
-
-        return ListView(
-          shrinkWrap: true,
-          padding: AppSizes.VERTICAL,
-          physics: BouncingScrollPhysics(),
-          children: [
-            // Category tabs
-            if (industries.isNotEmpty)
-              SizedBox(
-                height: 35,
-                child: ListView.separated(
-                  separatorBuilder: (context, index) => SizedBox(width: 10),
-                  padding: AppSizes.HORIZONTAL,
-                  physics: BouncingScrollPhysics(),
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: industries.length + 1, // +1 for "All"
-                  itemBuilder: (context, index) {
-                    final isAll = index == 0;
-                    final isSelected = isAll 
-                        ? selectedLabelIndex == null 
-                        : selectedLabelIndex == index - 1;
-                    final label = isAll ? 'All' : industries[index - 1];
-                    
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedLabelIndex = isAll ? null : index - 1;
-                        });
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: isSelected ? kSecondaryColor : kLightBlueColor2,
-                          border: Border.all(color: kBlueBorderColor),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: Center(
-                          child: MyText(
-                            text: label,
-                            size: 13,
-                            weight: FontWeight.w500,
-                            color: isSelected ? kPrimaryColor : kSecondaryColor,
-                          ),
-                        ),
-                      ),
-                    );
+      body: ListView(
+        shrinkWrap: true,
+        padding: AppSizes.VERTICAL,
+        physics: BouncingScrollPhysics(),
+        children: [
+          SizedBox(
+            height: 35,
+            child: ListView.separated(
+              separatorBuilder: (context, index) {
+                return SizedBox(width: 10);
+              },
+              padding: AppSizes.HORIZONTAL,
+              physics: BouncingScrollPhysics(),
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemCount: labels.length,
+              itemBuilder: (context, index) {
+                final isSelected = selectedLabelIndex == index;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedLabelIndex = index;
+                    });
                   },
-                ),
-              ),
-            SizedBox(height: 14),
-            
-            // Merchants list
-            if (filteredMerchants.isEmpty)
-              Padding(
-                padding: AppSizes.DEFAULT,
-                child: Center(
-                  child: MyText(
-                    text: 'No merchants found',
-                    size: 14,
-                    color: kQuaternaryColor,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: isSelected ? kSecondaryColor : kLightBlueColor2,
+                      border: Border.all(color: kBlueBorderColor),
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: Center(
+                      child: MyText(
+                        text: labels[index],
+                        size: 13,
+                        weight: FontWeight.w500,
+                        color: isSelected ? kPrimaryColor : kSecondaryColor,
+                      ),
+                    ),
                   ),
-                ),
-              )
-            else
-              ListView.builder(
-                padding: AppSizes.DEFAULT,
-                physics: BouncingScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: filteredMerchants.length,
-                itemBuilder: (context, i) {
-                  final entry = filteredMerchants.entries.elementAt(i);
-                  final merchantId = entry.key;
-                  final offers = entry.value;
-                  final firstOffer = offers.first;
-                  
-                  return GestureDetector(
-                    onTap: () {
-                      Get.to(
-                        () => URestaurantOffersDiscount(
-                          image: firstOffer.merchantLogo ?? dummyImg,
-                          title: firstOffer.merchantBrand ?? 'Merchant',
-                          merchantId: merchantId,
-                          offers: offers,
-                        ),
-                      );
-                    },
-                    child: _OfferTile(
-                      image: firstOffer.merchantLogo ?? dummyImg,
-                      title: firstOffer.merchantBrand ?? 'Merchant',
-                      dealsCount: offers.length,
-                      isSelected: false,
+                );
+              },
+            ),
+          ),
+          SizedBox(height: 14),
+          ListView.builder(
+            padding: AppSizes.DEFAULT,
+            physics: BouncingScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: offerList.length,
+            itemBuilder: (context, i) {
+              return GestureDetector(
+                onTap: () {
+                  Get.to(
+                    () => URestaurantOffersDiscount(
+                      image: offerList[i]["image"]!,
+                      title: offerList[i]["title"]!,
                     ),
                   );
                 },
-              ),
-          ],
-        );
-      }),
+                child: _OfferTile(user: offerList[i], isSelected: false),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
 
 class _OfferTile extends StatelessWidget {
-  const _OfferTile({
-    required this.image,
-    required this.title,
-    required this.dealsCount,
-    required this.isSelected,
-  });
+  const _OfferTile({required this.user, required this.isSelected});
 
-  final String image;
-  final String title;
-  final int dealsCount;
+  final Map<String, String> user;
   final bool isSelected;
 
   @override
@@ -260,7 +171,7 @@ class _OfferTile extends StatelessWidget {
       child: Row(
         children: [
           CommonImageView(
-            url: image,
+            imagePath: user["image"] as String,
             height: 38,
             width: 38,
             fit: BoxFit.cover,
@@ -272,13 +183,13 @@ class _OfferTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 MyText(
-                  text: title,
+                  text: user["title"] as String,
                   size: 15,
                   weight: FontWeight.w600,
                   paddingBottom: 4,
                 ),
                 MyText(
-                  text: '$dealsCount Deal${dealsCount != 1 ? 's' : ''}',
+                  text: '${user["deals"]}',
                   size: 12,
                   color: kQuaternaryColor,
                 ),

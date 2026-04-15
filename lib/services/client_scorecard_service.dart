@@ -22,6 +22,7 @@ class ClientScorecardService {
     } on AppException catch (e) {
       return Result.failure(e);
     } catch (e) {
+      print('❌ [ScorecardService] Unexpected error: $e');
       return Result.failure(const NetworkException());
     }
   }
