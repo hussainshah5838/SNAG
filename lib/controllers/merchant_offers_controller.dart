@@ -69,7 +69,6 @@ class MerchantOffersController extends GetxController {
           })
           .onFailure((error) {
             statsError.value = error.message;
-            print('❌ Error fetching dashboard stats: ${error.message}');
           });
     } finally {
       isLoadingStats.value = false;
@@ -106,7 +105,6 @@ class MerchantOffersController extends GetxController {
           })
           .onFailure((error) {
             offersError.value = error.message;
-            print('❌ Error fetching offers: ${error.message}');
           });
     } finally {
       isLoadingOffers.value = false;
@@ -127,7 +125,6 @@ class MerchantOffersController extends GetxController {
           })
           .onFailure((error) {
             offerError.value = error.message;
-            print('❌ Error fetching offer: ${error.message}');
           });
     } finally {
       isLoadingOffer.value = false;
@@ -147,12 +144,11 @@ class MerchantOffersController extends GetxController {
             success = true;
           })
           .onFailure((error) {
-            print('❌ Error deleting offer: ${error.message}');
+            // Error deleting offer
           });
       
       return success;
     } catch (e) {
-      print('❌ Error deleting offer: $e');
       return false;
     }
   }

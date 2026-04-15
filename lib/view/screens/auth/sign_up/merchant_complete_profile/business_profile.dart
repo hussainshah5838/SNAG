@@ -46,12 +46,6 @@ class BusinessProfileState extends State<BusinessProfile> {
   /// Called by CompleteProfile's Next button.
   /// Returns the form data if valid, null if validation fails.
   Map<String, dynamic>? getFormData() {
-    print('DEBUG branchName: "${_branchNameController.text.trim()}"');
-    print('DEBUG phone: "${_phoneController.text.trim()}"');
-    print('DEBUG address: "${_addressController.text.trim()}"');
-    print('DEBUG industry: $_selectedIndustry');
-    print('DEBUG subCategories: $_selectedSubCategories');
-
     if (_branchNameController.text.trim().isEmpty ||
         _phoneController.text.trim().isEmpty ||
         _addressController.text.trim().isEmpty ||

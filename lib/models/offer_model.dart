@@ -108,9 +108,6 @@ class OfferModel {
         updatedAt: DateTime.parse(json['updatedAt'] as String),
       );
     } catch (e, stackTrace) {
-      print('❌ [OfferModel] Error parsing JSON: $e');
-      print('📦 [OfferModel] JSON data: $json');
-      print('📍 [OfferModel] Stack trace: $stackTrace');
       rethrow;
     }
   }

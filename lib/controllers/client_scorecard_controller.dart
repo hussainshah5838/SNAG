@@ -15,14 +15,12 @@ class ClientScorecardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print('🚀 [ClientScorecardController] onInit called');
     loadScorecard();
   }
 
   @override
   void onReady() {
     super.onReady();
-    print('✅ [ClientScorecardController] onReady called');
   }
 
   /// Load user scorecard

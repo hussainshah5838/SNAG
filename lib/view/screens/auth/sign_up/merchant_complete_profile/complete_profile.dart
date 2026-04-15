@@ -54,9 +54,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
     switch (_currentStep) {
       // ── Step 0: Business Profile ──────────────────────────────────────────
       case 0:
-        print('DEBUG currentState: ${_businessProfileKey.currentState}');
         final data = _businessProfileKey.currentState?.getFormData();
-        print('DEBUG data: $data');
         if (data == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Please fill in all required fields')),

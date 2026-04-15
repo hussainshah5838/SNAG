@@ -58,14 +58,6 @@ class MerchantOnboardingService {
     String? role,
   }) async {
     try {
-      print('🔵 [SERVICE] editBranchProfile called');
-      print('🔵 branchName: $branchName');
-      print('🔵 phoneNumber: $phoneNumber');
-      print('🔵 branchAddress: $branchAddress');
-      print('🔵 industry: $industry');
-      print('🔵 subCategories: $subCategories');
-      print('🔵 role: $role');
-      
       final formData = FormData.fromMap({
         if (branchName != null) 'branchName': branchName,
         if (phoneNumber != null) 'phoneNumber': phoneNumber,
@@ -85,15 +77,11 @@ class MerchantOnboardingService {
           ),
       });
       
-      print('🔵 [SERVICE] Sending PATCH request to ${ApiEndpoints.merchantBranchProfile}');
       final res = await _client.patchFormData(ApiEndpoints.merchantBranchProfile, formData);
-      print('✅ [SERVICE] Response: ${res.data}');
       return Result.success(res.data['message'] as String? ?? 'Branch profile updated');
     } on AppException catch (e) {
-      print('❌ [SERVICE] AppException: ${e.message}');
       return Result.failure(e);
     } catch (e) {
-      print('❌ [SERVICE] Exception: $e');
       return Result.failure(ServerException(e.toString()));
     }
   }
@@ -222,21 +210,8 @@ class MerchantOnboardingService {
     String? email,
   }) async {
     try {
-      print('🔵 [SERVICE] editLocation called');
-      print('🔵 locationId: $locationId');
-      print('🔵 address: $address');
-      print('🔵 state: $state');
-      print('🔵 country: $country');
-      print('🔵 branchAddress: $branchAddress');
-      print('🔵 locationType: $locationType');
-      print('🔵 lat: $lat, lng: $lng');
-      print('🔵 phoneNumber: $phoneNumber');
-      print('🔵 email: $email');
-      print('🔵 bannerFile: ${bannerFile?.path}');
-      
       // If there's a banner file, use FormData
       if (bannerFile != null) {
-        print('🔵 Using FormData (with banner)');
         final formData = FormData.fromMap({
           if (address != null) 'address': address,
           if (state != null) 'state': state,
@@ -261,7 +236,6 @@ class MerchantOnboardingService {
         return Result.success(res.data['message'] as String? ?? 'Location updated');
       } else {
         // No banner file, use regular JSON
-        print('🔵 Using JSON (no banner)');
         final data = <String, dynamic>{};
         if (address != null) data['address'] = address;
         if (state != null) data['state'] = state;
@@ -276,21 +250,16 @@ class MerchantOnboardingService {
           if (phoneNumber != null) data['branchInfo']['phoneNumber'] = phoneNumber;
           if (email != null) data['branchInfo']['email'] = email;
         }
-
-        print('🔵 Data to send: $data');
         
         final res = await _client.patch(
           ApiEndpoints.merchantLocationById(locationId),
           data: data,
         );
-        print('✅ [SERVICE] Response: ${res.data}');
         return Result.success(res.data['message'] as String? ?? 'Location updated');
       }
     } on AppException catch (e) {
-      print('❌ [SERVICE] AppException: ${e.message}');
       return Result.failure(e);
     } catch (e) {
-      print('❌ [SERVICE] Exception: $e');
       return Result.failure(ServerException(e.toString()));
     }
   }

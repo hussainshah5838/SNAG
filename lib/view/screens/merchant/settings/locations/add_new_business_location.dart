@@ -106,9 +106,6 @@ class _AddNewBusinessLocationState extends State<AddNewBusinessLocation> {
 
     setState(() => _isLoading = false);
 
-    print('🔵 [ADD LOCATION] Success: $success');
-    print('🔵 [ADD LOCATION] Error: ${_controller.errorMsg.value}');
-
     if (success) {
       Get.snackbar('Success', 'Location added successfully', backgroundColor: Colors.green, colorText: Colors.white);
       

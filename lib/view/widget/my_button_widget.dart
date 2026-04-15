@@ -36,12 +36,10 @@ class MyButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            print('🟢 DEBUG: MyButton tapped - "$buttonText"');
             try {
               onTap();
-              print('🟢 DEBUG: MyButton onTap executed successfully');
             } catch (e) {
-              print('🔴 DEBUG: MyButton onTap error: $e');
+              // Silently catch errors
             }
           },
           splashColor: kWhiteColor.withValues(alpha: 0.1),

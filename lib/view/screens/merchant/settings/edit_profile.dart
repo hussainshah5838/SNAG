@@ -75,20 +75,11 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> _saveProfile() async {
-    print('🔵 [EDIT PROFILE] Saving profile...');
-    print('🔵 Branch Name: ${_branchNameController.text.trim()}');
-    print('🔵 Phone: ${_phoneController.text.trim()}');
-    print('🔵 Address: ${_addressController.text.trim()}');
-    print('🔵 Industry: $_selectedIndustry');
-    print('🔵 Role: $_selectedRole');
-    
     // Parse subcategories from comma-separated text
     final subCategoriesText = _subCategoryController.text.trim();
     final subCategories = subCategoriesText.isEmpty 
         ? <String>[]
         : subCategoriesText.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
-    
-    print('🔵 SubCategories: $subCategories');
     
     if (_selectedIndustry == null) {
       Get.snackbar(
@@ -119,7 +110,6 @@ class _EditProfileState extends State<EditProfile> {
     );
 
     if (success) {
-      print('✅ [EDIT PROFILE] Profile updated successfully');
       Get.back();
       Get.snackbar(
         'Success',
@@ -127,7 +117,6 @@ class _EditProfileState extends State<EditProfile> {
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
-      print('❌ [EDIT PROFILE] Error: ${_profileController.errorMsg.value}');
       Get.snackbar(
         'Error',
         _profileController.errorMsg.value,
@@ -161,7 +150,6 @@ class _EditProfileState extends State<EditProfile> {
         Get.back(); // Close modal
       }
     } catch (e) {
-      print('Error picking image: $e');
       Get.snackbar('Error', 'Failed to pick image');
     }
   }
@@ -182,7 +170,6 @@ class _EditProfileState extends State<EditProfile> {
         Get.back(); // Close modal
       }
     } catch (e) {
-      print('Error taking photo: $e');
       Get.snackbar('Error', 'Failed to take photo');
     }
   }
