@@ -30,7 +30,8 @@ class MerchantOnboardingService {
         'phoneNumber':   phoneNumber,
         'branchAddress': branchAddress,
         'industry':      industry,
-        'subCategories': subCategories,
+        for (int i = 0; i < subCategories.length; i++)
+          'subCategories[$i]': subCategories[i],
         if (logoFile != null)
           'logo': await MultipartFile.fromFile(
             logoFile.path,
@@ -151,9 +152,14 @@ class MerchantOnboardingService {
   // ── Bulk Upload ─────────────────────────────────────────────────────────────
 
   Future<Result<Map<String, dynamic>>> bulkUploadLocations({
-    required File csvFile,
+    File? csvFile,
     String? notes,
   }) async {
+    if (csvFile == null) {
+      // Skip bulk upload - return success without API call
+      return Result.success({'message': 'Bulk upload skipped'});
+    }
+    
     try {
       final formData = FormData.fromMap({
         'file': await MultipartFile.fromFile(

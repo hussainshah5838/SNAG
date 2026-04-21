@@ -109,10 +109,17 @@ class _CompleteProfileState extends State<CompleteProfile> {
         final data = _bulkUploadKey.currentState?.getFormData();
         if (data == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please upload a CSV file')),
+            const SnackBar(content: Text('Unable to process bulk upload')),
           );
           return;
         }
+        
+        // Skip if no CSV file was uploaded
+        if (data['skipped'] == true) {
+          // Just move to next step without API call
+          break;
+        }
+        
         final ok2 = await _ctrl.bulkUploadLocations(
           csvFile: data['csvFile'],
           notes:   data['notes'],
@@ -207,6 +214,15 @@ class _CompleteProfileState extends State<CompleteProfile> {
                       MyBorderButton(
                         buttonText: 'Add Location',
                         onTap: () => setState(() => _currentStep = 1),
+                      ),
+                    // "Skip" button on Bulk Upload step
+                    if (_currentStep == 2)
+                      MyBorderButton(
+                        buttonText: 'Skip',
+                        onTap: () {
+                          // Skip bulk upload and go to next step
+                          setState(() => _currentStep++);
+                        },
                       ),
                     Obx(() => MyButton(
                       buttonText: _currentStep == 4 ? 'Done' : 'Next',

@@ -64,8 +64,12 @@ class MerchantOnboardingController extends GetxController {
     return result.isSuccess;
   });
 
-  Future<bool> bulkUploadLocations({required File csvFile, String? notes}) =>
+  Future<bool> bulkUploadLocations({File? csvFile, String? notes}) =>
       _run(() async {
+        if (csvFile == null) {
+          // Skip bulk upload - just return success
+          return true;
+        }
         final result = await _service.bulkUploadLocations(csvFile: csvFile, notes: notes);
         result.onFailure((e) => errorMsg.value = e.message);
         return result.isSuccess;

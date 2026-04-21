@@ -37,16 +37,16 @@ class BulkUploadLocationsState extends State<BulkUploadLocations> {
   }
 
   Map<String, dynamic>? getFormData() {
-    if (_csvFile == null) {
-      Get.snackbar('Error', 'Please upload a CSV file',
-          backgroundColor: kRedColor, colorText: kPrimaryColor);
-      return null;
-    }
+    // Return empty data to indicate skip - no validation error
     return {
-      'csvFile': _csvFile!,
+      'csvFile': _csvFile,
       'notes':   _notesController.text.trim(),
+      'skipped': _csvFile == null, // Flag to indicate if step was skipped
     };
   }
+
+  // New method to check if user wants to skip
+  bool canSkip() => _csvFile == null;
 
   @override
   Widget build(BuildContext context) {
@@ -56,14 +56,14 @@ class BulkUploadLocationsState extends State<BulkUploadLocations> {
       physics: BouncingScrollPhysics(),
       children: [
         MyText(
-          text: "Bulk Upload Locations",
+          text: "Bulk Upload Locations (Optional)",
           paddingTop: 8,
           size: 24,
           weight: FontWeight.w600,
           paddingBottom: 8,
         ),
         MyText(
-          text: "Upload multiple Location at once with our CSV template.",
+          text: "Upload multiple Location at once with our CSV template, or skip this step to add locations individually.",
           size: 16,
           lineHeight: 1.5,
           weight: FontWeight.w500,
