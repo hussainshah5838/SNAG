@@ -3,6 +3,8 @@ import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
+import 'package:snag/controllers/auth_controller.dart';
+import 'package:snag/controllers/merchant_profile_controller.dart';
 import 'package:snag/main.dart';
 import 'package:snag/view/screens/merchant/billing_payments/billing_payments.dart';
 import 'package:snag/view/screens/merchant/settings/faq.dart';
@@ -25,65 +27,92 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   Set<int> selectedIndices = {};
+  final _authController = AuthController.instance;
+  late final MerchantProfileController _profileController;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Check if controller already exists
+    if (!Get.isRegistered<MerchantProfileController>()) {
+      _profileController = Get.put(MerchantProfileController());
+      _profileController.fetchBranchProfile();
+    } else {
+      _profileController = MerchantProfileController.instance;
+      // Only fetch if branchName is null and not currently loading
+      if (_profileController.branchName == null && !_profileController.isLoading.value) {
+        _profileController.fetchBranchProfile();
+      }
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            margin: EdgeInsets.only(left: 20, right: 20, top: 55),
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: kFillColor,
-              border: Border.all(color: kBorderColor, width: 1),
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: Row(
-              children: [
-                CommonImageView(
-                  url: dummyImg,
-                  height: 48,
-                  width: 48,
-                  fit: BoxFit.cover,
-                  radius: 100,
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MyText(
-                        text: "Kashan Ali",
-                        size: 16,
-                        weight: FontWeight.w500,
-                        paddingBottom: 4,
-                      ),
-                      MyText(
-                        text: "kashan7@gmail.com",
-                        size: 14,
-                        maxLines: 2,
-                        weight: FontWeight.w500,
-                        textOverflow: TextOverflow.ellipsis,
-                        color: kSecondaryColor,
-                      ),
-                    ],
+          Obx(() {
+            final isLoading = _profileController.isLoading.value;
+            final branchName = _profileController.branchName ?? 'Loading...';
+            final email = _authController.user.value?.email ?? '';
+            final logoUrl = _profileController.logoUrl;
+
+            return Container(
+              margin: EdgeInsets.only(left: 20, right: 20, top: 55),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: kFillColor,
+                border: Border.all(color: kBorderColor, width: 1),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Row(
+                children: [
+                  CommonImageView(
+                    url: logoUrl ?? dummyImg,
+                    height: 48,
+                    width: 48,
+                    fit: BoxFit.cover,
+                    radius: 100,
                   ),
-                ),
-                SizedBox(width: 16),
-                MyText(
-                  onTap: () {
-                    Get.to(() => EditProfile());
-                  },
-                  text: "Edit",
-                  size: 14,
-                  color: kSecondaryColor,
-                  weight: FontWeight.w600,
-                  paddingRight: 8,
-                ),
-              ],
-            ),
-          ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MyText(
+                          text: isLoading ? 'Loading...' : branchName,
+                          size: 16,
+                          weight: FontWeight.w500,
+                          paddingBottom: 4,
+                        ),
+                        MyText(
+                          text: email,
+                          size: 14,
+                          maxLines: 2,
+                          weight: FontWeight.w500,
+                          textOverflow: TextOverflow.ellipsis,
+                          color: kSecondaryColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  MyText(
+                    onTap: () {
+                      Get.to(() => EditProfile());
+                    },
+                    text: "Edit",
+                    size: 14,
+                    color: kSecondaryColor,
+                    weight: FontWeight.w600,
+                    paddingRight: 8,
+                  ),
+                ],
+              ),
+            );
+          }),
 
           Expanded(
             child: ListView(
@@ -102,7 +131,7 @@ class _SettingsState extends State<Settings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 2,
+                  itemCount: 1, // Changed from 2 to 1 (only Locations)
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
                       {
@@ -110,11 +139,12 @@ class _SettingsState extends State<Settings> {
                         "subtitle": "Your locations",
                         "image": Assets.imagesYourLocations,
                       },
-                      {
-                        "title": "Billing & Payments",
-                        "subtitle": "Manage payments and billing.",
-                        "image": Assets.imagesBillingPayments,
-                      },
+                      // TODO: Uncomment to enable Billing & Payments
+                      // {
+                      //   "title": "Billing & Payments",
+                      //   "subtitle": "Manage payments and billing.",
+                      //   "image": Assets.imagesBillingPayments,
+                      // },
                     ];
                     return GestureDetector(
                       onTap: () {
@@ -122,9 +152,9 @@ class _SettingsState extends State<Settings> {
                           case 0:
                             Get.to(() => BusinessLocations());
                             break;
-                          case 1:
-                            Get.to(() => BillingPayments());
-                            break;
+                          // case 1:
+                          //   Get.to(() => BillingPayments());
+                          //   break;
                         }
                       },
                       child: Container(
@@ -259,85 +289,86 @@ class _SettingsState extends State<Settings> {
                   },
                 ),
 
-                MyText(
-                  paddingTop: 12,
-                  text: 'Share Info',
-                  size: 16,
-                  weight: FontWeight.w600,
-                  paddingBottom: 16,
-                ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  padding: AppSizes.ZERO,
-                  physics: BouncingScrollPhysics(),
-                  itemCount: 2,
-                  itemBuilder: (context, index) {
-                    final List<Map<String, dynamic>> settingsOptions = [
-                      {
-                        "title": "Share Us",
-                        "subtitle": "Invite others",
-                        "image": Assets.imagesShareUsIcon,
-                      },
-                      {
-                        "title": "Rate Us",
-                        "subtitle": "Give feedback",
-                        "image": Assets.imagesRateUsIcon,
-                      },
-                    ];
-                    return GestureDetector(
-                      onTap: () {
-                        switch (index) {
-                          case 0:
-                            Get.dialog(_shareAppDialog());
-                            break;
-                          case 1:
-                            Get.dialog(_feedbackDialog());
-                            break;
-                        }
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(bottom: 16),
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: kFillColor,
-                          border: Border.all(color: kBorderColor, width: 1),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              settingsOptions[index]["image"],
-                              height: 36,
-                              width: 36,
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  MyText(
-                                    text: settingsOptions[index]["title"],
-                                    size: 16,
-                                    weight: FontWeight.w600,
-                                    paddingBottom: 4,
-                                  ),
-                                  MyText(
-                                    text: settingsOptions[index]["subtitle"],
-                                    size: 14,
-                                    color: kQuaternaryColor,
-                                    weight: FontWeight.w500,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Image.asset(Assets.imagesArrowNext, height: 24),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                // TODO: Uncomment to enable Share Info section
+                // MyText(
+                //   paddingTop: 12,
+                //   text: 'Share Info',
+                //   size: 16,
+                //   weight: FontWeight.w600,
+                //   paddingBottom: 16,
+                // ),
+                // ListView.builder(
+                //   shrinkWrap: true,
+                //   padding: AppSizes.ZERO,
+                //   physics: BouncingScrollPhysics(),
+                //   itemCount: 2,
+                //   itemBuilder: (context, index) {
+                //     final List<Map<String, dynamic>> settingsOptions = [
+                //       {
+                //         "title": "Share Us",
+                //         "subtitle": "Invite others",
+                //         "image": Assets.imagesShareUsIcon,
+                //       },
+                //       {
+                //         "title": "Rate Us",
+                //         "subtitle": "Give feedback",
+                //         "image": Assets.imagesRateUsIcon,
+                //       },
+                //     ];
+                //     return GestureDetector(
+                //       onTap: () {
+                //         switch (index) {
+                //           case 0:
+                //             Get.dialog(_shareAppDialog());
+                //             break;
+                //           case 1:
+                //             Get.dialog(_feedbackDialog());
+                //             break;
+                //         }
+                //       },
+                //       child: Container(
+                //         margin: EdgeInsets.only(bottom: 16),
+                //         padding: EdgeInsets.all(10),
+                //         decoration: BoxDecoration(
+                //           color: kFillColor,
+                //           border: Border.all(color: kBorderColor, width: 1),
+                //           borderRadius: BorderRadius.circular(50),
+                //         ),
+                //         child: Row(
+                //           children: [
+                //             Image.asset(
+                //               settingsOptions[index]["image"],
+                //               height: 36,
+                //               width: 36,
+                //             ),
+                //             SizedBox(width: 12),
+                //             Expanded(
+                //               child: Column(
+                //                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                //                 children: [
+                //                   MyText(
+                //                     text: settingsOptions[index]["title"],
+                //                     size: 16,
+                //                     weight: FontWeight.w600,
+                //                     paddingBottom: 4,
+                //                   ),
+                //                   MyText(
+                //                     text: settingsOptions[index]["subtitle"],
+                //                     size: 14,
+                //                     color: kQuaternaryColor,
+                //                     weight: FontWeight.w500,
+                //                   ),
+                //                 ],
+                //               ),
+                //             ),
+                //             SizedBox(width: 16),
+                //             Image.asset(Assets.imagesArrowNext, height: 24),
+                //           ],
+                //         ),
+                //       ),
+                //     );
+                //   },
+                // ),
               ],
             ),
           ),
@@ -603,9 +634,9 @@ class _SettingsState extends State<Settings> {
                 MyButton(
                   height: 42,
                   buttonText: 'Confirm',
-                  onTap: () {
-                    Get.back();
-                    // Add your logout logic here
+                  onTap: () async {
+                    Get.back(); // Close dialog
+                    await _authController.logout();
                   },
                 ),
                 SizedBox(height: 12),
@@ -679,9 +710,9 @@ class _SettingsState extends State<Settings> {
                 MyButton(
                   height: 42,
                   buttonText: 'Delete',
-                  onTap: () {
-                    Get.back();
-                    // Add your logout logic here
+                  onTap: () async {
+                    Get.back(); // Close dialog
+                    await _authController.deleteAccount();
                   },
                 ),
                 SizedBox(height: 12),

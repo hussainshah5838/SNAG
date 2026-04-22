@@ -15,7 +15,7 @@ class BusinessLocationInfo extends StatefulWidget {
 }
 
 class _BusinessLocationInfoState extends State<BusinessLocationInfo> {
-  String _contactName = "Owner/Admin";
+  // String _contactName = "Owner/Admin"; // Commented out - backend doesn't support contactName
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,18 +61,19 @@ class _BusinessLocationInfoState extends State<BusinessLocationInfo> {
             isMandatory: true,
             onChanged: (val) {},
           ),
-          CustomDropDown(
-            prefix: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [Image.asset(Assets.imagesName, height: 20)],
-            ),
-            labelText: 'Contact Name',
-            hint: 'Select Contact Name',
-            isMandatory: true,
-            items: ['Owner/Admin', 'Manager', 'Staff', 'Other'],
-            selectedValue: _contactName,
-            onChanged: (val) => setState(() => _contactName = val),
-          ),
+          // Contact Name dropdown commented out - backend doesn't support it in add/edit location
+          // CustomDropDown(
+          //   prefix: Column(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [Image.asset(Assets.imagesName, height: 20)],
+          //   ),
+          //   labelText: 'Contact Name',
+          //   hint: 'Select Contact Name',
+          //   isMandatory: true,
+          //   items: ['Owner/Admin', 'Manager', 'Staff', 'Other'],
+          //   selectedValue: _contactName,
+          //   onChanged: (val) => setState(() => _contactName = val),
+          // ),
         ],
       ),
       bottomNavigationBar: Padding(

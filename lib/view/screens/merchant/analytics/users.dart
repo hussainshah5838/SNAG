@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
+import 'package:snag/controllers/merchant_analytics_controller.dart';
 import 'package:snag/view/widget/custom_drop_down_widget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:snag/constants/app_sizes.dart';
@@ -15,292 +17,123 @@ class _PieChartData {
   _PieChartData(this.label, this.value, this.color);
 }
 
+class _BarData {
+  final String x;
+  final double y1;
+  final double y2;
+  final double y3;
+  _BarData(this.x, this.y1, this.y2, this.y3);
+}
+
 class Users extends StatelessWidget {
   const Users({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: kFillColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: kBorderColor, width: 1.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: MyText(
-                      text: 'Age Segmentation',
-                      size: 14,
-                      weight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 85,
-                    child: AnOtherDropDown(
-                      hint: 'Location',
-                      items: ['Location', 'Urban', 'Suburban', 'Rural'],
-                      selectedValue: 'Location',
-                      onChanged: (value) {},
-                    ),
-                  ),
-                ],
-              ),
-              MyText(
-                paddingTop: 8,
-                text: '50%',
-                size: 28,
-                weight: FontWeight.w500,
-                color: kSecondaryColor,
-              ),
-              MyText(
-                text: 'are in 18-25',
-                size: 16,
-                weight: FontWeight.w500,
-                paddingBottom: 20,
-              ),
-              _Chart(),
-              SizedBox(height: 8),
-            ],
-          ),
-        ),
-        SizedBox(height: 20),
+    final c = Get.find<MerchantAnalyticsController>();
+    return Obx(() {
+      if (c.isLoadingUsers.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      if (c.usersError.value != null) {
+        return Center(child: MyText(text: c.usersError.value!, size: 14, color: kRedColor));
+      }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _StackedBarSection(c: c),
+          const SizedBox(height: 20),
+          _PieChartSection(c: c),
+          const SizedBox(height: 20),
+          _UsersGrid(c: c),
+        ],
+      );
+    });
+  }
+}
 
-        Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: kFillColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: kBorderColor, width: 1.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+// ── Stacked bar chart (gender × age group) ─────────────────────────────────────
+
+class _StackedBarSection extends StatelessWidget {
+  const _StackedBarSection({required this.c});
+  final MerchantAnalyticsController c;
+
+  @override
+  Widget build(BuildContext context) {
+    // genderByAge items: { x: 'M(18-24)', y1, y2, y3 }
+    // NOTE: gender split is approximated (55% male / 45% female) —
+    //       User model has no gender field. y1=in-store, y2=online, y3=other.
+    final barData = c.genderByAge.map((item) {
+      return _BarData(
+        item['x']  as String? ?? '',
+        (item['y1'] ?? 0).toDouble(),
+        (item['y2'] ?? 0).toDouble(),
+        (item['y3'] ?? 0).toDouble(),
+      );
+    }).toList();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: kFillColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: kBorderColor, width: 1.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: MyText(
-                      text: 'Age Segmentation',
-                      size: 14,
-                      weight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 85,
-                    child: AnOtherDropDown(
-                      hint: 'Location',
-                      items: ['Location', 'Urban', 'Suburban', 'Rural'],
-                      selectedValue: 'Location',
-                      onChanged: (value) {},
-                    ),
-                  ),
-                ],
+              Expanded(
+                child: MyText(text: 'Age Segmentation', size: 14, weight: FontWeight.w600),
               ),
-              MyText(
-                paddingTop: 8,
-                text: '50%',
-                size: 28,
-                weight: FontWeight.w500,
-                color: kSecondaryColor,
-              ),
-              MyText(
-                text: 'are in 18-25',
-                size: 16,
-                weight: FontWeight.w500,
-                paddingBottom: 20,
-              ),
+              // TODO: Location type filter (Urban/Suburban/Rural) —
+              //       Location model has no locationType field yet.
+              //       Wire up by calling c.fetchUsersAnalytics() with locationType param
+              //       once the field is added to the Location model.
               SizedBox(
-                height: 170,
-                child: SfCircularChart(
-                  series: <PieSeries<_PieChartData, String>>[
-                    PieSeries<_PieChartData, String>(
-                      dataSource: [
-                        _PieChartData('', 30, kSecondaryColor),
-                        _PieChartData('', 45, kGreenColor),
-                        _PieChartData('', 25, kRedColor),
-                      ],
-                      radius: '100%',
-
-                      xValueMapper: (_PieChartData data, _) => data.label,
-                      yValueMapper: (_PieChartData data, _) => data.value,
-                      pointColorMapper: (_PieChartData data, _) => data.color,
-                      dataLabelMapper:
-                          (_PieChartData data, _) => '${data.value}%',
-                      dataLabelSettings: DataLabelSettings(
-                        isVisible: true,
-                        textStyle: TextStyle(color: kPrimaryColor),
-                        builder: (
-                          data,
-                          point,
-                          series,
-                          pointIndex,
-                          seriesIndex,
-                        ) {
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              MyText(
-                                text: '${data.value.toInt()}%',
-                                size: 12,
-                                color: kPrimaryColor,
-                                weight: FontWeight.w600,
-                              ),
-                              MyText(
-                                text: data.label,
-                                size: 10,
-                                color: kPrimaryColor,
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                width: 85,
+                child: AnOtherDropDown(
+                  hint: 'Location',
+                  items: const ['Location', 'Urban', 'Suburban', 'Rural'],
+                  selectedValue: 'Location',
+                  onChanged: (value) {
+                    // TODO: not supported — Location model needs locationType field
+                  },
                 ),
               ),
-              SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(3, (index) {
-                  return Row(
-                    children: [
-                      Icon(
-                        Icons.circle,
-                        size: 10,
-                        color:
-                            index == 0
-                                ? kGreenColor
-                                : index == 1
-                                ? kSecondaryColor
-                                : kRedColor,
-                      ),
-                      SizedBox(width: 6),
-                      MyText(
-                        text:
-                            index == 0
-                                ? '18-25'
-                                : index == 1
-                                ? '26-35'
-                                : '36-45',
-                        color: kTertiaryColor,
-                        weight: FontWeight.w500,
-                        size: 12,
-                      ),
-                      if (index != 2) SizedBox(width: 16),
-                    ],
-                  );
-                }),
-              ),
-              SizedBox(height: 8),
             ],
           ),
-        ),
-        SizedBox(height: 20),
-
-        GridView.builder(
-          shrinkWrap: true,
-          physics: BouncingScrollPhysics(),
-          padding: AppSizes.ZERO,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            mainAxisExtent: 122,
+          MyText(
+            paddingTop: 8,
+            text: '${c.dominantPercentage.value}%',
+            size: 28,
+            weight: FontWeight.w500,
+            color: kSecondaryColor,
           ),
-          itemCount: 2,
-          itemBuilder: (BuildContext context, int index) {
-            final List<Map<String, dynamic>> stats = [
-              {
-                'icon': Assets.imagesDollarRounded,
-                'percent': '32%',
-                'percentColor': kGreenColor,
-                'percentText': ' vs Last Month',
-                'label': 'Unique Users',
-                'value': '5900',
-              },
-              {
-                'icon': Assets.imagesTotalBranches,
-                'percent': '20%',
-                'percentColor': kGreenColor,
-                'percentText': ' vs Last Month',
-                'label': 'Repetitive Users',
-                'value': '6000',
-              },
-            ];
-            final stat = stats[index];
-            return Container(
-              decoration: BoxDecoration(
-                color: kFillColor,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: kBorderColor, width: 1.0),
-              ),
-              padding: EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    children: [
-                      Image.asset(stat['icon'], height: 24, width: 24),
-                      Expanded(
-                        child: RichText(
-                          textAlign: TextAlign.end,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: stat['percent'],
-                                style: TextStyle(
-                                  fontFamily: AppFonts.WORK_SANS,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 10,
-                                  color: stat['percentColor'],
-                                ),
-                              ),
-                              TextSpan(
-                                text: stat['percentText'],
-                                style: TextStyle(
-                                  color: kTertiaryColor,
-                                  fontFamily: AppFonts.WORK_SANS,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Spacer(),
-                  MyText(
-                    text: stat['label'],
-                    size: 14,
-                    weight: FontWeight.w500,
-                    paddingBottom: 6,
-                  ),
-                  MyText(
-                    text: stat['value'],
-                    size: 24,
-                    fontFamily: GoogleFonts.dmSans().fontFamily,
-                    weight: FontWeight.w700,
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
+          MyText(
+            text: 'are in ${c.dominantAgeGroup.value}',
+            size: 16,
+            weight: FontWeight.w500,
+            paddingBottom: 20,
+          ),
+          barData.isEmpty
+              ? SizedBox(
+                  height: 200,
+                  child: Center(child: MyText(text: 'No data', size: 14)),
+                )
+              : _StackedBarChart(data: barData),
+          const SizedBox(height: 8),
+        ],
+      ),
     );
   }
 }
 
-class _Chart extends StatelessWidget {
+class _StackedBarChart extends StatelessWidget {
+  const _StackedBarChart({required this.data});
+  final List<_BarData> data;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -314,15 +147,12 @@ class _Chart extends StatelessWidget {
         enableAxisAnimation: true,
         primaryYAxis: NumericAxis(
           name: 'yAxis',
-          maximum: 2500,
           minimum: 0,
-          interval: 500,
           isVisible: true,
           plotOffset: 10.0,
-          majorGridLines: MajorGridLines(width: 1, color: kBorderColor),
-          majorTickLines: MajorTickLines(width: 0),
-          axisLine: AxisLine(width: 0),
-          opposedPosition: false,
+          majorGridLines: const MajorGridLines(width: 1, color: kBorderColor),
+          majorTickLines: const MajorTickLines(width: 0),
+          axisLine: const AxisLine(width: 0),
           labelStyle: TextStyle(
             color: kTertiaryColor,
             fontSize: 10.0,
@@ -332,12 +162,10 @@ class _Chart extends StatelessWidget {
         ),
         primaryXAxis: CategoryAxis(
           name: 'xAxis',
-          maximum: 5,
-          minimum: 1,
           plotOffset: 5,
-          majorGridLines: MajorGridLines(width: 0),
-          axisLine: AxisLine(width: 0),
-          majorTickLines: MajorTickLines(width: 0),
+          majorGridLines: const MajorGridLines(width: 0),
+          axisLine: const AxisLine(width: 0),
+          majorTickLines: const MajorTickLines(width: 0),
           labelStyle: TextStyle(
             color: kTertiaryColor,
             fontSize: 10.0,
@@ -345,62 +173,267 @@ class _Chart extends StatelessWidget {
             fontFamily: AppFonts.WORK_SANS,
           ),
         ),
-        series: graphData(),
+        series: [
+          StackedColumnSeries<_BarData, String>(
+            dataSource: data,
+            xValueMapper: (d, _) => d.x,
+            yValueMapper: (d, _) => d.y2,
+            color: const Color(0xffEDFBFF),
+            width: 0.7,
+            name: 'Online',
+          ),
+          StackedColumnSeries<_BarData, String>(
+            dataSource: data,
+            xValueMapper: (d, _) => d.x,
+            yValueMapper: (d, _) => d.y1,
+            color: kSecondaryColor,
+            width: 0.7,
+            name: 'In-Store',
+          ),
+          StackedColumnSeries<_BarData, String>(
+            dataSource: data,
+            xValueMapper: (d, _) => d.x,
+            yValueMapper: (d, _) => d.y3,
+            color: kLightBlueColor3,
+            width: 0.7,
+            name: 'Other',
+          ),
+        ],
       ),
     );
   }
+}
 
-  List<StackedColumnSeries<ChartData, String>> graphData() {
-    final List<ChartData> _dataSource = [
-      ChartData(x: 'M(18–24)', y1: 1350, y2: 400, y3: 200),
-      ChartData(x: 'M(25–34)', y1: 800, y2: 300, y3: 150),
-      ChartData(x: 'M(35–44)', y1: 500, y2: 200, y3: 100),
-      ChartData(x: 'F(18–24)', y1: 1250, y2: 350, y3: 180),
-      ChartData(x: 'F(25–34)', y1: 950, y2: 320, y3: 140),
-      ChartData(x: 'F(35–44)', y1: 650, y2: 210, y3: 90),
-    ];
-    return [
-      StackedColumnSeries<ChartData, String>(
-        dataSource: _dataSource,
-        xValueMapper: (ChartData data, _) => data.x,
-        yValueMapper: (ChartData data, _) => data.y2,
-        color: Color(0xffEDFBFF),
-        width: 0.7,
-        spacing: 0,
-        name: 'B',
+// ── Pie chart (age segmentation) ──────────────────────────────────────────────
+
+class _PieChartSection extends StatelessWidget {
+  const _PieChartSection({required this.c});
+  final MerchantAnalyticsController c;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = [kSecondaryColor, kGreenColor, kRedColor, Colors.orange];
+    // NOTE: ageSegmentation comes from offer.targetAudience.demographics,
+    //       not from real user age data. User model has no age/dateOfBirth field.
+    final pieData = List.generate(c.ageSegmentation.length, (i) {
+      final seg = c.ageSegmentation[i];
+      return _PieChartData(
+        seg['ageGroup'] as String? ?? '',
+        (seg['percentage'] ?? 0).toDouble(),
+        colors[i % colors.length],
+      );
+    });
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: kFillColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: kBorderColor, width: 1.0),
       ),
-      StackedColumnSeries<ChartData, String>(
-        dataSource: _dataSource,
-        xValueMapper: (ChartData data, _) => data.x,
-        yValueMapper: (ChartData data, _) => data.y1,
-        color: kSecondaryColor,
-        width: 0.7,
-        spacing: 0,
-        name: 'A',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: MyText(text: 'Age Segmentation', size: 14, weight: FontWeight.w600),
+              ),
+              // TODO: Location type filter (Urban/Suburban/Rural) —
+              //       Location model has no locationType field yet.
+              SizedBox(
+                width: 85,
+                child: AnOtherDropDown(
+                  hint: 'Location',
+                  items: const ['Location', 'Urban', 'Suburban', 'Rural'],
+                  selectedValue: 'Location',
+                  onChanged: (value) {
+                    // TODO: not supported — Location model needs locationType field
+                  },
+                ),
+              ),
+            ],
+          ),
+          MyText(
+            paddingTop: 8,
+            text: '${c.dominantPercentage.value}%',
+            size: 28,
+            weight: FontWeight.w500,
+            color: kSecondaryColor,
+          ),
+          MyText(
+            text: 'are in ${c.dominantAgeGroup.value}',
+            size: 16,
+            weight: FontWeight.w500,
+            paddingBottom: 20,
+          ),
+          SizedBox(
+            height: 170,
+            child: pieData.isEmpty
+                ? Center(child: MyText(text: 'No data', size: 14))
+                : SfCircularChart(
+                    series: <PieSeries<_PieChartData, String>>[
+                      PieSeries<_PieChartData, String>(
+                        dataSource: pieData,
+                        radius: '100%',
+                        xValueMapper: (_PieChartData d, _) => d.label,
+                        yValueMapper: (_PieChartData d, _) => d.value,
+                        pointColorMapper: (_PieChartData d, _) => d.color,
+                        dataLabelSettings: DataLabelSettings(
+                          isVisible: true,
+                          textStyle: const TextStyle(color: kPrimaryColor),
+                          builder: (data, point, series, pointIndex, seriesIndex) {
+                            final d = data as _PieChartData;
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                MyText(
+                                  text: '${d.value.toInt()}%',
+                                  size: 12,
+                                  color: kPrimaryColor,
+                                  weight: FontWeight.w600,
+                                ),
+                                MyText(text: d.label, size: 10, color: kPrimaryColor),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(pieData.length.clamp(0, 4), (i) {
+              final visibleCount = pieData.length.clamp(0, 4);
+              return Row(
+                children: [
+                  Icon(Icons.circle, size: 10, color: colors[i % colors.length]),
+                  const SizedBox(width: 6),
+                  MyText(
+                    text: pieData[i].label,
+                    color: kTertiaryColor,
+                    weight: FontWeight.w500,
+                    size: 12,
+                  ),
+                  if (i != visibleCount - 1) const SizedBox(width: 16),
+                ],
+              );
+            }),
+          ),
+          const SizedBox(height: 8),
+        ],
       ),
-      StackedColumnSeries<ChartData, String>(
-        dataSource: _dataSource,
-        xValueMapper: (ChartData data, _) => data.x,
-        yValueMapper: (ChartData data, _) => data.y3,
-        color: kLightBlueColor3,
-        width: 0.7,
-        spacing: 0,
-        name: 'C',
-      ),
-    ];
+    );
   }
 }
 
-class ChartData {
-  final String x;
-  final double y1;
-  final double y2;
-  final double y3;
+// ── Users grid cards ───────────────────────────────────────────────────────────
 
-  ChartData({
-    required this.x,
-    required this.y1,
-    required this.y2,
-    required this.y3,
-  });
+class _UsersGrid extends StatelessWidget {
+  const _UsersGrid({required this.c});
+  final MerchantAnalyticsController c;
+
+  @override
+  Widget build(BuildContext context) {
+    final stats = [
+      {
+        'icon':        Assets.imagesDollarRounded,
+        'label':       'Unique Users',
+        'value':       '${c.uniqueUsers.value}',
+        // uniqueUsersVsLastMonth — compares stats.clicks this month vs last month
+        'percent':     c.uniqueUsersVsLastMonth.value != 0
+            ? '${c.uniqueUsersVsLastMonth.value}%'
+            : '',
+        'percentColor': kGreenColor,
+        'percentText': c.uniqueUsersVsLastMonth.value != 0 ? ' vs Last Month' : '',
+      },
+      {
+        'icon':        Assets.imagesTotalBranches,
+        'label':       'Repetitive Users',
+        'value':       '${c.repetitiveUsers.value}',
+        // repetitiveUsersVsLastMonth — compares stats.redemptions this month vs last
+        'percent':     c.repetitiveUsersVsLastMonth.value != 0
+            ? '${c.repetitiveUsersVsLastMonth.value}%'
+            : '',
+        'percentColor': kGreenColor,
+        'percentText': c.repetitiveUsersVsLastMonth.value != 0 ? ' vs Last Month' : '',
+      },
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const BouncingScrollPhysics(),
+      padding: AppSizes.ZERO,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        mainAxisExtent: 122,
+      ),
+      itemCount: stats.length,
+      itemBuilder: (context, index) {
+        final stat = stats[index];
+        return Container(
+          decoration: BoxDecoration(
+            color: kFillColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: kBorderColor, width: 1.0),
+          ),
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Image.asset(stat['icon'] as String, height: 24, width: 24),
+                  Expanded(
+                    child: RichText(
+                      textAlign: TextAlign.end,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: stat['percent'] as String,
+                            style: TextStyle(
+                              fontFamily: AppFonts.WORK_SANS,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 10,
+                              color: stat['percentColor'] as Color,
+                            ),
+                          ),
+                          TextSpan(
+                            text: stat['percentText'] as String,
+                            style: TextStyle(
+                              color: kTertiaryColor,
+                              fontFamily: AppFonts.WORK_SANS,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              MyText(
+                text: stat['label'] as String,
+                size: 14,
+                weight: FontWeight.w500,
+                paddingBottom: 6,
+              ),
+              MyText(
+                text: stat['value'] as String,
+                size: 24,
+                fontFamily: GoogleFonts.dmSans().fontFamily,
+                weight: FontWeight.w700,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }

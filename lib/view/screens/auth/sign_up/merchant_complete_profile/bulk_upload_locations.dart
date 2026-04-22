@@ -1,18 +1,52 @@
+import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
 import 'package:snag/view/widget/my_text_widget.dart';
 import 'package:snag/view/widget/my_text_field_widget.dart';
-import 'package:flutter/material.dart';
 
 class BulkUploadLocations extends StatefulWidget {
+  const BulkUploadLocations({super.key});
+
   @override
-  State<BulkUploadLocations> createState() => BulkUploadLocationsState();
+  BulkUploadLocationsState createState() => BulkUploadLocationsState();
 }
 
 class BulkUploadLocationsState extends State<BulkUploadLocations> {
-  bool _showUploadedFile = false;
+  File? _csvFile;
+  final _notesController = TextEditingController();
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+    );
+    if (result != null && result.files.single.path != null) {
+      setState(() => _csvFile = File(result.files.single.path!));
+    }
+  }
+
+  Map<String, dynamic>? getFormData() {
+    // Return empty data to indicate skip - no validation error
+    return {
+      'csvFile': _csvFile,
+      'notes':   _notesController.text.trim(),
+      'skipped': _csvFile == null, // Flag to indicate if step was skipped
+    };
+  }
+
+  // New method to check if user wants to skip
+  bool canSkip() => _csvFile == null;
 
   @override
   Widget build(BuildContext context) {
@@ -22,23 +56,23 @@ class BulkUploadLocationsState extends State<BulkUploadLocations> {
       physics: BouncingScrollPhysics(),
       children: [
         MyText(
-          text: "Bulk Upload Locations",
+          text: "Bulk Upload Locations (Optional)",
           paddingTop: 8,
           size: 24,
           weight: FontWeight.w600,
           paddingBottom: 8,
         ),
         MyText(
-          text: "Upload multiple Location at once with our CSV template.",
+          text: "Upload multiple Location at once with our CSV template, or skip this step to add locations individually.",
           size: 16,
           lineHeight: 1.5,
           weight: FontWeight.w500,
           color: kQuaternaryColor,
           paddingBottom: 30,
         ),
-        if (!_showUploadedFile)
+        if (_csvFile == null)
           GestureDetector(
-            onTap: () => setState(() => _showUploadedFile = true),
+            onTap: _pickFile,
             child: DottedBorder(
               options: RoundedRectDottedBorderOptions(
                 color: kBorderColor,
@@ -66,7 +100,7 @@ class BulkUploadLocationsState extends State<BulkUploadLocations> {
                     ),
                     MyText(
                       paddingTop: 2,
-                      text: 'Supported formats : Jpeg, pdf',
+                      text: 'Supported formats : CSV',
                       size: 12,
                       color: kQuaternaryColor,
                       lineHeight: 1.6,
@@ -77,53 +111,50 @@ class BulkUploadLocationsState extends State<BulkUploadLocations> {
               ),
             ),
           ),
-        if (_showUploadedFile) ...[_UploadedFile()],
+        if (_csvFile != null)
+          GestureDetector(
+            onTap: _pickFile,
+            child: Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: kFillColor,
+                border: Border.all(color: kBorderColor, width: 1),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Row(
+                children: [
+                  Image.asset(Assets.imagesFile, height: 28),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MyText(
+                          text: _csvFile!.path.split('/').last,
+                          size: 16,
+                          weight: FontWeight.w600,
+                          paddingBottom: 4,
+                        ),
+                        MyText(text: 'CSV File', size: 14, color: kQuaternaryColor),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         SizedBox(height: 20),
         MyTextField(
+          controller: _notesController,
           prefix: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [Image.asset(Assets.imagesTt, height: 20)],
           ),
           labelText: 'Additional Notes (Optional)',
-          hintText: "e.g., “These branches are in Lahore only”",
-          isMandatory: true,
+          hintText: 'e.g., "These branches are in Lahore only"',
           onChanged: (val) {},
         ),
       ],
-    );
-  }
-}
-
-class _UploadedFile extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: kFillColor,
-        border: Border.all(color: kBorderColor, width: 1),
-        borderRadius: BorderRadius.circular(50),
-      ),
-      child: Row(
-        children: [
-          Image.asset(Assets.imagesFile, height: 28),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                MyText(
-                  text: "Locations-template.csv",
-                  size: 16,
-                  weight: FontWeight.w600,
-                  paddingBottom: 4,
-                ),
-                MyText(text: 'Csv File', size: 14, color: kQuaternaryColor),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

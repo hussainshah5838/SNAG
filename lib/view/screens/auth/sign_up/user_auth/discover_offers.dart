@@ -3,6 +3,8 @@ import 'package:snag/constants/app_sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_images.dart';
+import 'package:snag/controllers/client_onboarding_controller.dart';
+import 'package:snag/controllers/industry_controller.dart';
 import 'package:snag/view/screens/auth/sign_up/user_auth/user_profile_image.dart';
 import 'package:snag/view/widget/custom_app_bar_widget.dart';
 import 'package:snag/view/widget/my_button_widget.dart';
@@ -16,7 +18,30 @@ class DiscoverOffers extends StatefulWidget {
 }
 
 class _DiscoverOffersState extends State<DiscoverOffers> {
-  Set<int> _selectedIndices = {0};
+  final Set<int> _selectedIndices = {};
+
+  final _ctrl         = ClientOnboardingController.instance;
+  final _industryCtrl = IndustryController.instance;
+
+  Future<void> _onNext() async {
+    if (_selectedIndices.isEmpty) {
+      Get.snackbar('Error', 'Please select at least one interest',
+          backgroundColor: kRedColor, colorText: kPrimaryColor);
+      return;
+    }
+
+    final selected = _selectedIndices
+        .map((i) => _industryCtrl.industries[i])
+        .toList();
+
+    final success = await _ctrl.saveInterests(interests: selected);
+    if (success) {
+      Get.to(() => UserProfileImage());
+    } else {
+      Get.snackbar('Error', _ctrl.errorMsg.value,
+          backgroundColor: kRedColor, colorText: kPrimaryColor);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +76,7 @@ class _DiscoverOffersState extends State<DiscoverOffers> {
                   color: kSecondaryColor,
                   weight: FontWeight.w600,
                   paddingBottom: 16,
+                  onTap: () => Get.to(() => UserProfileImage()),
                 ),
                 MyText(
                   text: 'Discover Offers',
@@ -68,53 +94,56 @@ class _DiscoverOffersState extends State<DiscoverOffers> {
                   color: kQuaternaryColor,
                   paddingBottom: 30,
                 ),
-                GridView.builder(
-                  shrinkWrap: true,
-                  padding: AppSizes.ZERO,
-                  physics: BouncingScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisExtent: 80,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemCount: 6,
-                  itemBuilder: (BuildContext context, int index) {
-                    final offers = [
-                      {'icon': Assets.imagesRetail, 'title': 'Retail'},
-                      {'icon': Assets.imagesSports, 'title': 'Sports'},
-                      {'icon': Assets.imagesBeauty, 'title': 'Beauty'},
-                      {
-                        'icon': Assets.imagesFoodDrink,
-                        'title': 'Food & Drinks',
-                      },
-                      {'icon': Assets.imagesHealth, 'title': 'Health'},
-                      {'icon': Assets.imagesServices, 'title': 'Services'},
-                    ];
-                    final offer = offers[index];
-                    return _OfferCard(
-                      icon: offer['icon']!,
-                      title: offer['title']!,
-                      onTap: () {
-                        setState(() {
-                          if (_selectedIndices.contains(index)) {
-                            _selectedIndices.remove(index);
-                          } else {
-                            _selectedIndices.add(index);
-                          }
-                        });
-                      },
-                      isSelected: _selectedIndices.contains(index),
-                    );
-                  },
-                ),
+                Obx(() {
+                  final industries = _industryCtrl.industries;
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    padding: AppSizes.ZERO,
+                    physics: BouncingScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisExtent: 80,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
+                    itemCount: industries.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      // Icon map — fallback to a default if industry not in map
+                      final iconMap = {
+                        'Retail':       Assets.imagesRetail,
+                        'Sports':       Assets.imagesSports,
+                        'Beauty':       Assets.imagesBeauty,
+                        'Food & Drinks': Assets.imagesFoodDrink,
+                        'Health':       Assets.imagesHealth,
+                        'Services':     Assets.imagesServices,
+                      };
+                      final title = industries[index];
+                      final icon  = iconMap[title] ?? Assets.imagesCategory;
+                      return _OfferCard(
+                        icon: icon,
+                        title: title,
+                        isSelected: _selectedIndices.contains(index),
+                        onTap: () => setState(() {
+                          _selectedIndices.contains(index)
+                              ? _selectedIndices.remove(index)
+                              : _selectedIndices.add(index);
+                        }),
+                      );
+                    },
+                  );
+                }),
                 SizedBox(height: 40),
-                MyButton(
+                Obx(() => MyButton(
                   buttonText: 'Next',
-                  onTap: () {
-                    Get.to(() => UserProfileImage());
-                  },
-                ),
+                  onTap: _ctrl.isLoading.value ? () {} : _onNext,
+                  customChild: _ctrl.isLoading.value
+                      ? SizedBox(
+                          height: 22, width: 22,
+                          child: CircularProgressIndicator(
+                              color: kPrimaryColor, strokeWidth: 2.5),
+                        )
+                      : null,
+                )),
               ],
             ),
           ),

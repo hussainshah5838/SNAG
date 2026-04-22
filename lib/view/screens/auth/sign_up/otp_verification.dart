@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_sizes.dart';
+import 'package:snag/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snag/constants/app_colors.dart';
@@ -42,6 +44,35 @@ class _OTPBottomSheet extends StatefulWidget {
 class _OTPBottomSheetState extends State<_OTPBottomSheet> {
   final TextEditingController pinController = TextEditingController();
   String pinStatus = '';
+  int countdown = 30;
+  Timer? _timer;
+
+  final _auth = AuthController.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _startCountdown();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    pinController.dispose();
+    super.dispose();
+  }
+
+  void _startCountdown() {
+    _timer?.cancel();
+    setState(() => countdown = 30);
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (countdown > 0) {
+        setState(() => countdown--);
+      } else {
+        timer.cancel();
+      }
+    });
+  }
 
   Color getPinTextColor() {
     switch (pinStatus) {
@@ -54,21 +85,36 @@ class _OTPBottomSheetState extends State<_OTPBottomSheet> {
 
   void onPinChanged(String value) {
     setState(() {
-      if (value.length == 5 && value != '12345') {
-        pinStatus = 'invalid';
-      } else {
-        pinStatus = '';
-      }
+      // Clear invalid state while user is typing
+      if (pinStatus == 'invalid') pinStatus = '';
     });
   }
 
-  void onVerify() {
-    if (pinController.text == '12345') {
-      Get.to(() => LocationAccess());
+  Future<void> onVerify() async {
+    if (pinController.text.length < 5) {
+      setState(() => pinStatus = 'invalid');
+      return;
+    }
+
+    final success = await _auth.verifyEmail(code: pinController.text);
+
+    if (!success) {
+      setState(() => pinStatus = 'invalid');
+      Get.snackbar('Error', _auth.errorMsg.value,
+          backgroundColor: kRedColor, colorText: kPrimaryColor);
+    }
+    // Navigation is handled by AuthController._navigateAfterAuth()
+  }
+
+  Future<void> onResend() async {
+    await _auth.resendCode();
+    if (_auth.errorMsg.value.isNotEmpty) {
+      Get.snackbar('Error', _auth.errorMsg.value,
+          backgroundColor: kRedColor, colorText: kPrimaryColor);
     } else {
-      setState(() {
-        pinStatus = 'invalid';
-      });
+      Get.snackbar('Sent', 'Code resent to your email',
+          backgroundColor: kGreenColor, colorText: kPrimaryColor);
+      _startCountdown();
     }
   }
 
@@ -143,17 +189,33 @@ class _OTPBottomSheetState extends State<_OTPBottomSheet> {
               paddingTop: 10,
             ),
           SizedBox(height: 50),
-          MyButton(buttonText: 'Verify & Continue', onTap: onVerify),
+          Obx(() => MyButton(
+            buttonText: 'Verify & Continue',
+            onTap: _auth.isLoading.value ? () {} : onVerify,
+            customChild: _auth.isLoading.value
+                ? SizedBox(
+                    height: 22, width: 22,
+                    child: CircularProgressIndicator(
+                        color: kPrimaryColor, strokeWidth: 2.5),
+                  )
+                : null,
+          )),
           SizedBox(height: 30),
           Center(
             child: Wrap(
               children: [
-                MyText(text: '00:30 Sec - ', size: 16, weight: FontWeight.w500),
                 MyText(
-                  onTap: () {},
+                  text: countdown > 0 
+                    ? '00:${countdown.toString().padLeft(2, '0')} Sec - '
+                    : 'Code expired - ',
+                  size: 16,
+                  weight: FontWeight.w500,
+                ),
+                MyText(
+                  onTap: countdown == 0 ? onResend : null,
                   text: 'Resend Code',
                   weight: FontWeight.w600,
-                  color: kAmberColor,
+                  color: countdown == 0 ? kAmberColor : kQuaternaryColor,
                   size: 16,
                 ),
               ],

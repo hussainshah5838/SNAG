@@ -1,9 +1,11 @@
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/instance_manager.dart';
+import 'package:intl/intl.dart';
 import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
+import 'package:snag/models/offer_model.dart';
 import 'package:snag/view/screens/user/user_scan_qr/u_payment_method.dart';
 import 'package:snag/view/widget/custom_app_bar_widget.dart';
 import 'package:snag/view/widget/my_button_widget.dart';
@@ -12,8 +14,17 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class UOfferRedeemed extends StatelessWidget {
+  final SnagOfferResponse? redemption;
+  
+  const UOfferRedeemed({super.key, this.redemption});
+  
   @override
   Widget build(BuildContext context) {
+    final dateFormat = DateFormat('MMM d, yyyy • h:mm a');
+    final redeemedDate = redemption != null 
+        ? dateFormat.format(redemption!.redeemedAt)
+        : 'Just now';
+    
     return Scaffold(
       appBar: simpleAppBar(
         title: '',
@@ -87,7 +98,7 @@ class UOfferRedeemed extends StatelessWidget {
               Image.asset(Assets.imagesKfc, height: 40),
               Expanded(
                 child: MyText(
-                  text: "Weekend Flash Deal — 15% Off",
+                  text: redemption?.title ?? "Weekend Flash Deal — 15% Off",
                   size: 22,
                   weight: FontWeight.w600,
                 ),
@@ -103,74 +114,72 @@ class UOfferRedeemed extends StatelessWidget {
             color: kTertiaryColor,
             paddingBottom: 20,
           ),
-          Row(
-            children: [
-              MyText(
-                text: 'Coupon Code: ',
-                size: 16,
-                weight: FontWeight.w500,
-                color: Colors.black,
-                paddingBottom: 30,
-              ),
-              MyText(
-                text: '“XYZ123”',
-                size: 24,
-                weight: FontWeight.w600,
-                color: Colors.black,
-                paddingBottom: 30,
-              ),
-            ],
-          ),
-          Center(
-            child: Image.asset(
-              Assets.imagesQr,
-              height: 180,
-              color: Colors.black,
+          if (redemption?.couponCode != null) ...[
+            Row(
+              children: [
+                MyText(
+                  text: 'Coupon Code: ',
+                  size: 16,
+                  weight: FontWeight.w500,
+                  color: Colors.black,
+                  paddingBottom: 30,
+                ),
+                MyText(
+                  text: redemption!.couponCode!,
+                  size: 24,
+                  weight: FontWeight.w600,
+                  color: Colors.black,
+                  paddingBottom: 30,
+                ),
+              ],
             ),
-          ),
-          SizedBox(height: 28),
-          Center(
-            child: Image.asset(
-              Assets.imagesBarCode,
-              height: 90,
-              color: Colors.black,
+          ],
+          if (redemption?.qrCodeUrl != null) ...[
+            Center(
+              child: Image.network(
+                redemption!.qrCodeUrl!,
+                height: 180,
+                errorBuilder: (context, error, stackTrace) => Image.asset(
+                  Assets.imagesQr,
+                  height: 180,
+                  color: Colors.black,
+                ),
+              ),
             ),
-          ),
+            SizedBox(height: 28),
+          ],
+          if (redemption?.barCodeUrl != null) ...[
+            Center(
+              child: Image.network(
+                redemption!.barCodeUrl!,
+                height: 90,
+                errorBuilder: (context, error, stackTrace) => Image.asset(
+                  Assets.imagesBarCode,
+                  height: 90,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
           SizedBox(height: 20),
-          ...List.generate(3, (index) {
-            final List<Map<String, String>> details = [
-              {
-                'icon': Assets.imagesBank,
-                'value':
-                    'XYS Street,  123 lane, 34660, San Francisco Bay Area.',
-              },
-              {
-                'icon': Assets.imagesTime,
-                'value': '9 August, 2025 - 21 August, 2025',
-              },
-              {'icon': Assets.imagesLocationType, 'value': 'In-Store Offer'},
-            ];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image.asset(details[index]['icon']!, height: 28),
-                  Expanded(
-                    child: MyText(
-                      paddingLeft: 10,
-                      text: details[index]['value']!,
-                      size: 16,
-                      weight: FontWeight.w500,
-                      paddingRight: 10,
-                    ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.asset(Assets.imagesTime, height: 28),
+                Expanded(
+                  child: MyText(
+                    paddingLeft: 10,
+                    text: 'Redeemed on $redeemedDate',
+                    size: 16,
+                    weight: FontWeight.w500,
+                    paddingRight: 10,
                   ),
-                  if (index == 0)
-                    Image.asset(Assets.imagesDirections, height: 24),
-                ],
-              ),
-            );
-          }),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: Padding(
@@ -178,7 +187,7 @@ class UOfferRedeemed extends StatelessWidget {
         child: MyButton(
           buttonText: 'Done',
           onTap: () {
-            Get.to(() => UPaymentMethod());
+            Get.back();
           },
         ),
       ),

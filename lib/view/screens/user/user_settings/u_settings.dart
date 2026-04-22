@@ -2,10 +2,11 @@ import 'package:snag/constants/app_colors.dart';
 import 'package:snag/constants/app_fonts.dart';
 import 'package:snag/constants/app_images.dart';
 import 'package:snag/constants/app_sizes.dart';
+import 'package:snag/controllers/auth_controller.dart';
+import 'package:snag/controllers/client_profile_controller.dart';
 import 'package:snag/main.dart';
 import 'package:snag/view/screens/merchant/billing_payments/billing_payments.dart';
 import 'package:snag/view/screens/merchant/settings/faq.dart';
-import 'package:snag/view/screens/merchant/settings/locations/business_locations.dart';
 import 'package:snag/view/screens/notifications/user_notifications.dart';
 import 'package:snag/view/screens/user/user_settings/u_contact_support.dart';
 import 'package:snag/view/screens/user/user_settings/u_preferences.dart';
@@ -32,65 +33,94 @@ class USettings extends StatefulWidget {
 
 class _USettingsState extends State<USettings> {
   Set<int> selectedIndices = {};
+  final _authController = AuthController.instance;
+  late final ClientProfileController _profileController;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!Get.isRegistered<ClientProfileController>()) {
+      _profileController = Get.put(ClientProfileController());
+      _profileController.loadProfile();
+    } else {
+      _profileController = ClientProfileController.instance;
+      // Only load if profile is null and not currently loading
+      if (_profileController.profile.value == null && !_profileController.isLoading.value) {
+        _profileController.loadProfile();
+      }
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            margin: EdgeInsets.only(left: 20, right: 20, top: 55),
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: kFillColor,
-              border: Border.all(color: kBorderColor, width: 1),
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: Row(
-              children: [
-                CommonImageView(
-                  url: dummyImg,
-                  height: 48,
-                  width: 48,
-                  fit: BoxFit.cover,
-                  radius: 100,
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MyText(
-                        text: "Kashan Ali",
-                        size: 16,
-                        weight: FontWeight.w500,
-                        paddingBottom: 4,
-                      ),
-                      MyText(
-                        text: "kashan7@gmail.com",
-                        size: 14,
-                        maxLines: 2,
-                        weight: FontWeight.w500,
-                        textOverflow: TextOverflow.ellipsis,
-                        color: kSecondaryColor,
-                      ),
-                    ],
+          Obx(() {
+            final isLoading = _profileController.isLoading.value;
+            final fullName = _profileController.fullName.isNotEmpty
+                ? _profileController.fullName
+                : 'User';
+            final email = _profileController.email.isNotEmpty
+                ? _profileController.email
+                : 'No email';
+            final avatarUrl = _profileController.avatarUrl;
+
+            return Container(
+              margin: EdgeInsets.only(left: 20, right: 20, top: 55),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: kFillColor,
+                border: Border.all(color: kBorderColor, width: 1),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Row(
+                children: [
+                  CommonImageView(
+                    url: avatarUrl ?? dummyImg,
+                    height: 48,
+                    width: 48,
+                    fit: BoxFit.cover,
+                    radius: 100,
                   ),
-                ),
-                SizedBox(width: 16),
-                MyText(
-                  onTap: () {
-                    Get.to(() => UProfileSettings());
-                  },
-                  text: "Edit",
-                  size: 14,
-                  color: kSecondaryColor,
-                  weight: FontWeight.w600,
-                  paddingRight: 8,
-                ),
-              ],
-            ),
-          ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MyText(
+                          text: fullName,
+                          size: 16,
+                          weight: FontWeight.w500,
+                          paddingBottom: 4,
+                        ),
+                        MyText(
+                          text: email,
+                          size: 14,
+                          maxLines: 2,
+                          weight: FontWeight.w500,
+                          textOverflow: TextOverflow.ellipsis,
+                          color: kSecondaryColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  MyText(
+                    onTap: () {
+                      Get.to(() => UProfileSettings());
+                    },
+                    text: "Edit",
+                    size: 14,
+                    color: kSecondaryColor,
+                    weight: FontWeight.w600,
+                    paddingRight: 8,
+                  ),
+                ],
+              ),
+            );
+          }),
 
           Expanded(
             child: ListView(
@@ -109,19 +139,21 @@ class _USettingsState extends State<USettings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 3,
+                  itemCount: 1, // Changed from 3 to 1 (only Notifications)
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
-                      {
-                        "title": "Shipping Address",
-                        "subtitle": "Manage shipping addresses.",
-                        "image": Assets.imagesYourLocations,
-                      },
-                      {
-                        "title": "Billing & Payments",
-                        "subtitle": "Manage payments and billing.",
-                        "image": Assets.imagesBillingPayments,
-                      },
+                      // TODO: Uncomment to enable Shipping Address
+                      // {
+                      //   "title": "Shipping Address",
+                      //   "subtitle": "Manage shipping addresses.",
+                      //   "image": Assets.imagesYourLocations,
+                      // },
+                      // TODO: Uncomment to enable Billing & Payments
+                      // {
+                      //   "title": "Billing & Payments",
+                      //   "subtitle": "Manage payments and billing.",
+                      //   "image": Assets.imagesBillingPayments,
+                      // },
                       {
                         "title": "Notifications",
                         "image": Assets.imagesNotificationSettings,
@@ -130,13 +162,13 @@ class _USettingsState extends State<USettings> {
                     return GestureDetector(
                       onTap: () {
                         switch (index) {
-                          case 0:
-                            Get.to(() => ShippingAddress());
-                            break;
-                          case 1:
-                            Get.to(() => BillingPayments());
-                            break;
-                          case 2:
+                          // case 0:
+                          //   Get.to(() => ShippingAddress());
+                          //   break;
+                          // case 1:
+                          //   Get.to(() => BillingPayments());
+                          //   break;
+                          case 0: // Changed from case 2
                             Get.to(() => UserNotifications());
                             break;
                         }
@@ -184,7 +216,7 @@ class _USettingsState extends State<USettings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 4,
+                  itemCount: 2, // Changed from 4 to 2 (only Preferences and Snag Scorecard)
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
                       {"title": "Preferences", "image": Assets.imagesSnagScore},
@@ -192,9 +224,10 @@ class _USettingsState extends State<USettings> {
                         "title": "Snag Scorecard",
                         "image": Assets.imagesSnagScore,
                       },
-
-                      {"title": "Share Us", "image": Assets.imagesShareUsIcon},
-                      {"title": "Rate Us", "image": Assets.imagesRateUsIcon},
+                      // TODO: Uncomment to enable Share Us
+                      // {"title": "Share Us", "image": Assets.imagesShareUsIcon},
+                      // TODO: Uncomment to enable Rate Us
+                      // {"title": "Rate Us", "image": Assets.imagesRateUsIcon},
                     ];
                     return GestureDetector(
                       onTap: () {
@@ -205,12 +238,12 @@ class _USettingsState extends State<USettings> {
                           case 1:
                             Get.to(() => USnagScore());
                             break;
-                          case 2:
-                            Get.dialog(_shareAppDialog());
-                            break;
-                          case 3:
-                            Get.dialog(_feedbackDialog());
-                            break;
+                          // case 2:
+                          //   Get.dialog(_shareAppDialog());
+                          //   break;
+                          // case 3:
+                          //   Get.dialog(_feedbackDialog());
+                          //   break;
                         }
                       },
                       child: Container(
@@ -256,7 +289,7 @@ class _USettingsState extends State<USettings> {
                   shrinkWrap: true,
                   padding: AppSizes.ZERO,
                   physics: BouncingScrollPhysics(),
-                  itemCount: 3,
+                  itemCount: 3, // Changed from 4 to 3 (removed Support)
                   itemBuilder: (context, index) {
                     final List<Map<String, dynamic>> settingsOptions = [
                       {
@@ -264,7 +297,9 @@ class _USettingsState extends State<USettings> {
                         "subtitle": "Get help",
                         "image": Assets.imagesHelpAndFaq,
                       },
-                      {"title": "Support", "image": Assets.imagesSupport},
+                      // TODO: Uncomment to enable Support
+                      // {"title": "Support", "image": Assets.imagesSupport},
+                      {"title": "Delete Account", "image": Assets.imagesDeleteAccount},
                       {"title": "Log out", "image": Assets.imagesLogoutIcon},
                     ];
                     return GestureDetector(
@@ -273,10 +308,13 @@ class _USettingsState extends State<USettings> {
                           case 0:
                             Get.to(() => Faq());
                             break;
-                          case 1:
-                            Get.to(() => UContactSupport());
+                          // case 1:
+                          //   Get.to(() => UContactSupport());
+                          //   break;
+                          case 1: // Changed from case 2
+                            Get.dialog(_deleteAccountDialog());
                             break;
-                          case 2:
+                          case 2: // Changed from case 3
                             Get.dialog(_logoutDialog());
                             break;
                         }
@@ -522,6 +560,82 @@ class _USettingsState extends State<USettings> {
     );
   }
 
+  Column _deleteAccountDialog() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: Container(
+            margin: AppSizes.DEFAULT,
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: kFillColor,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: kBorderColor, width: 1),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Image.asset(Assets.imagesDeleteProfile, height: 48),
+                    GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4, right: 4),
+                        child: Image.asset(Assets.imagesCloseIcon, height: 14),
+                      ),
+                    ),
+                  ],
+                ),
+                MyText(
+                  paddingTop: 16,
+                  text: 'Delete Your Profile?',
+                  size: 20,
+                  weight: FontWeight.w600,
+                  paddingBottom: 8,
+                ),
+                MyText(
+                  text:
+                      'If you delete your profile, all your data and connections will be permanently removed. This can\'t be undone.',
+                  size: 15,
+                  lineHeight: 1.5,
+                  weight: FontWeight.w500,
+                  color: kQuaternaryColor,
+                  paddingBottom: 24,
+                ),
+                MyButton(
+                  height: 42,
+                  buttonText: 'Delete',
+                  onTap: () async {
+                    Get.back(); // Close dialog
+                    await _authController.deleteAccount();
+                  },
+                ),
+                SizedBox(height: 12),
+                MyBorderButton(
+                  borderColor: kGreyColor2,
+                  height: 42,
+                  buttonText: 'Cancel',
+                  onTap: () {
+                    Get.back();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Column _logoutDialog() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -576,9 +690,9 @@ class _USettingsState extends State<USettings> {
                 MyButton(
                   height: 42,
                   buttonText: 'Confirm',
-                  onTap: () {
-                    Get.back();
-                    // Add your logout logic here
+                  onTap: () async {
+                    Get.back(); // Close dialog
+                    await _authController.logout();
                   },
                 ),
                 SizedBox(height: 12),

@@ -12,7 +12,7 @@ class LocationInfo extends StatefulWidget {
 }
 
 class LocationInfoState extends State<LocationInfo> {
-  String _contactName = "Owner/Admin";
+  // String _contactName = "Owner/Admin"; // Commented out - backend doesn't require contactName
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +57,19 @@ class LocationInfoState extends State<LocationInfo> {
           isMandatory: true,
           onChanged: (val) {},
         ),
-        CustomDropDown(
-          prefix: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [Image.asset(Assets.imagesName, height: 20)],
-          ),
-          labelText: 'Contact Name',
-          hint: 'Select Contact Name',
-          isMandatory: true,
-          items: ['Owner/Admin', 'Manager', 'Staff', 'Other'],
-          selectedValue: _contactName,
-          onChanged: (val) => setState(() => _contactName = val),
-        ),
+        // Contact Name dropdown commented out - backend doesn't require it
+        // CustomDropDown(
+        //   prefix: Column(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [Image.asset(Assets.imagesName, height: 20)],
+        //   ),
+        //   labelText: 'Contact Name',
+        //   hint: 'Select Contact Name',
+        //   isMandatory: true,
+        //   items: ['Owner/Admin', 'Manager', 'Staff', 'Other'],
+        //   selectedValue: _contactName,
+        //   onChanged: (val) => setState(() => _contactName = val),
+        // ),
       ],
     );
   }

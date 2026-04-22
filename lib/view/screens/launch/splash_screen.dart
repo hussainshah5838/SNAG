@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:snag/constants/app_colors.dart';
+import 'package:snag/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snag/constants/app_images.dart';
@@ -18,8 +19,23 @@ class _SplashScreenState extends State<SplashScreen> {
     splashScreenHandler();
   }
 
-  void splashScreenHandler() {
-    Timer(Duration(seconds: 3), () => Get.offAll(() => Login()));
+  void splashScreenHandler() async {
+    // Wait for splash animation
+    await Future.delayed(Duration(seconds: 3));
+
+    final authController = AuthController.instance;
+
+    // _initAuth() reads SecureStorage asynchronously — wait for it to finish
+    // before checking isLoggedIn so we never send an authenticated user to Login.
+    while (authController.isLoading.value) {
+      await Future.delayed(Duration(milliseconds: 50));
+    }
+
+    if (authController.isLoggedIn) {
+      authController.navigateAfterAuth();
+    } else {
+      Get.offAll(() => Login());
+    }
   }
 
   @override
