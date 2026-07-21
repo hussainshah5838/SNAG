@@ -19,6 +19,8 @@ class MyTextField extends StatefulWidget {
     this.isReadOnly,
     this.onTap,
     this.isMandatory = false,
+    this.keyboardType,
+    this.autocorrect = true,
   }) : super(key: key);
 
   String? labelText, hintText;
@@ -31,6 +33,8 @@ class MyTextField extends StatefulWidget {
   Widget? prefix, suffix;
   final VoidCallback? onTap;
   final bool isMandatory;
+  final TextInputType? keyboardType;
+  final bool autocorrect;
 
   @override
   State<MyTextField> createState() => _MyTextFieldState();
@@ -84,6 +88,8 @@ class _MyTextFieldState extends State<MyTextField> {
               controller: widget.controller,
               onChanged: widget.onChanged,
               textInputAction: TextInputAction.next,
+              keyboardType: widget.keyboardType,
+              autocorrect: widget.autocorrect,
               obscureText: widget.isObSecure!,
               obscuringCharacter: '*',
               style: TextStyle(

@@ -118,6 +118,8 @@ class _ForgotPassBottomSheet extends StatelessWidget {
             marginBottom: 30,
             labelText: 'Email',
             hintText: 'example@email.com',
+            keyboardType: TextInputType.emailAddress,
+            autocorrect: false,
             prefix: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [Image.asset(Assets.imagesEmail, height: 20)],

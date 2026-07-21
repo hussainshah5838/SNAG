@@ -94,13 +94,23 @@ class _SignUpBottomSheetState extends State<_SignUpBottomSheet> {
         _emailController.text.trim().isEmpty ||
         _phoneController.text.trim().isEmpty ||
         _passwordController.text.isEmpty) {
-      Get.snackbar('Error', 'Please fill in all fields',
-          backgroundColor: kRedColor, colorText: kPrimaryColor);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: Please fill in all fields',
+              style: TextStyle(color: kPrimaryColor)),
+          backgroundColor: kRedColor,
+        ),
+      );
       return;
     }
     if (!_termsAccepted) {
-      Get.snackbar('Error', 'Please accept the terms and conditions',
-          backgroundColor: kRedColor, colorText: kPrimaryColor);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: Please accept the terms and conditions',
+              style: TextStyle(color: kPrimaryColor)),
+          backgroundColor: kRedColor,
+        ),
+      );
       return;
     }
 
@@ -114,9 +124,14 @@ class _SignUpBottomSheetState extends State<_SignUpBottomSheet> {
 
     if (success) {
       Get.to(() => OTPVerification());
-    } else {
-      Get.snackbar('Error', _auth.errorMsg.value,
-          backgroundColor: kRedColor, colorText: kPrimaryColor);
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${_auth.errorMsg.value}',
+              style: TextStyle(color: kPrimaryColor)),
+          backgroundColor: kRedColor,
+        ),
+      );
     }
   }
 
@@ -172,6 +187,8 @@ class _SignUpBottomSheetState extends State<_SignUpBottomSheet> {
             controller: _emailController,
             labelText: 'Enter your email',
             hintText: 'example@email.com',
+            keyboardType: TextInputType.emailAddress,
+            autocorrect: false,
             prefix: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [Image.asset(Assets.imagesEmail, height: 20)],

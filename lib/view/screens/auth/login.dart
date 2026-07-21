@@ -43,13 +43,15 @@ class _LoginState extends State<Login> {
       password: _passwordController.text,
     );
 
-    if (!success && _authController.errorMsg.value.isNotEmpty) {
-      Get.snackbar(
-        'Login Failed',
-        _authController.errorMsg.value,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
+    if (!success && _authController.errorMsg.value.isNotEmpty && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Login Failed: ${_authController.errorMsg.value}',
+            style: TextStyle(color: Colors.red.shade900),
+          ),
+          backgroundColor: Colors.red.shade100,
+        ),
       );
     }
   }
@@ -146,6 +148,8 @@ class _LoginBottomSheet extends StatelessWidget {
               controller: emailController,
               labelText: 'Enter your email',
               hintText: 'example@email.com',
+              keyboardType: TextInputType.emailAddress,
+              autocorrect: false,
               prefix: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [Image.asset(Assets.imagesEmail, height: 20)],

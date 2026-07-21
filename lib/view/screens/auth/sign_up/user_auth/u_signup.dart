@@ -165,6 +165,8 @@ class _SignUpBottomSheetState extends State<_SignUpBottomSheet> {
             controller: _emailController,
             labelText: 'Email',
             hintText: 'Enter your email',
+            keyboardType: TextInputType.emailAddress,
+            autocorrect: false,
             prefix: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [Image.asset(Assets.imagesEmail, height: 20)],
