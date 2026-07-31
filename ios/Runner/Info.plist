@@ -47,5 +47,19 @@
 	<true/>
 	<key>NSContactsUsageDescription</key>
 	<string>Used to pick contacts to invite to a meetup.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library so you can attach existing photos to a snag report or set your profile picture.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app needs permission to save photos you capture in the app to your photo library.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to your camera so you can take photos of a snag or defect and attach them to a report.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to your microphone to record audio when you capture a video for a snag report.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses your location to show nearby jobs and merchants on the map and to tag snag reports with the correct property address.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app uses your location to show nearby jobs and merchants on the map and to tag snag reports with the correct property address.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app uses your location to show nearby jobs and merchants on the map and to tag snag reports with the correct property address.</string>
 </dict>
 </plist>
