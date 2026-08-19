@@ -39,6 +39,16 @@ class MyApp extends StatelessWidget {
       initialRoute: AppLinks.splash_screen,
       getPages: AppRoutes.pages,
       defaultTransition: Transition.fadeIn,
+      // Dismiss the on-screen keyboard whenever the user taps outside of the
+      // currently focused text field. Applied globally so every screen,
+      // dialog and bottom sheet behaves the same way.
+      builder: (context, child) {
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

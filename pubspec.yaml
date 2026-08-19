@@ -27,7 +27,7 @@ dependencies:
   flutter_svg: ^2.0.17
   flutter_xlider: ^3.5.0
   get: ^4.7.1
-  google_fonts: ^6.2.1
+  google_fonts: ^8.2.1
   google_maps_flutter: ^2.10.0
   google_places_flutter: ^2.0.9
   intl: null
