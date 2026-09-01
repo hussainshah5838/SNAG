@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -22,7 +24,27 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>GMSApiKey</key>
+	<string>AIzaSyCyZpl3E54tU0Nq_feaRsLsEkdX1MhI7hU</string>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to your camera so you can take photos of a snag or defect and attach them to a report.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Used to pick contacts to invite to a meetup.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app uses your location to show nearby jobs and merchants on the map and to tag snag reports with the correct property address.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app uses your location to show nearby jobs and merchants on the map and to tag snag reports with the correct property address.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses your location to show nearby jobs and merchants on the map and to tag snag reports with the correct property address.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to your microphone to record audio when you capture a video for a snag report.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app needs permission to save photos you capture in the app to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library so you can attach existing photos to a snag report or set your profile picture.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -41,25 +63,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>NSContactsUsageDescription</key>
-	<string>Used to pick contacts to invite to a meetup.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs access to your photo library so you can attach existing photos to a snag report or set your profile picture.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>This app needs permission to save photos you capture in the app to your photo library.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>This app needs access to your camera so you can take photos of a snag or defect and attach them to a report.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app needs access to your microphone to record audio when you capture a video for a snag report.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app uses your location to show nearby jobs and merchants on the map and to tag snag reports with the correct property address.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app uses your location to show nearby jobs and merchants on the map and to tag snag reports with the correct property address.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app uses your location to show nearby jobs and merchants on the map and to tag snag reports with the correct property address.</string>
 </dict>
 </plist>
