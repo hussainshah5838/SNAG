@@ -8,7 +8,7 @@ class ApiEndpoints {
   ApiEndpoints._(); // prevent instantiation
 
   // ── Base ────────────────────────────────────────────────────────────────────
-  // Pulled from Env — set via --dart-define at build/run time.
+  // Pulled from Env — hardcoded there, change it in one place.
   static String get baseUrl => Env.baseUrl;
 
   // ── Auth ────────────────────────────────────────────────────────────────────
